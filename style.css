@@ -26,7 +26,9 @@ body {
 /* HEADER Y LOGO */
 header {
     background: rgba(26, 26, 26, 0.95);
-    padding: 1rem 5%;
+    padding: 0.5rem 5%;
+    height: auto;
+    min-height: 140px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,14 +39,30 @@ header {
     backdrop-filter: blur(10px);
 }
 
-.logo img {
-    height: 60px;
-    transition: transform 0.3s;
-    display: block;
+/* Ajuste para el Logo */
+.logo {
+    display: flex;
+    align-items: center;
 }
 
+.logo a {
+    text-decoration: none;
+    display: block;
+    line-height: 0; /* Elimina espacios extra debajo de la imagen */
+}
+
+.logo img {
+    height: 120px; /* Tamaño imponente */
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: transparent !important;
+    filter: drop-shadow(0px 10px 20px rgba(255, 77, 0, 0.3)); /* Sombra naranja para resaltar */
+}
+
+/* Efecto al pasar el mouse */
 .logo a:hover img {
-    transform: scale(1.1) rotate(-3deg);
+    transform: scale(1.1);
 }
 
 nav {
@@ -215,12 +233,63 @@ footer {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    header { flex-direction: column; padding: 1.5rem; }
+    .logo img {
+        height: 80px; /* Tamaño moderado para móviles */
+    }
+    header { 
+        flex-direction: column; padding: 1.5rem;
+        min-height: 100px; }
     nav { margin-top: 15px; flex-wrap: wrap; justify-content: center; }
     nav a { margin: 5px 10px; }
     
     h1 { font-size: 2.5rem; }
     .historia-flex { flex-direction: column; }
     .container-detalle { grid-template-columns: 1fr; }
-    .img-detalle { height: 300px; }
+    .img-detalle {
+        width: 100%;
+        height: 350px; /* Altura suficiente para mostrar el plato */
+        min-height: 300px;
+        background-size: cover; /* Asegura que cubra el espacio sin deformarse */
+        background-position: center; /* Centra la comida en el visor */
+        border-radius: 20px 20px 0 0; /* Redondea solo las esquinas de arriba */
+    }
+
+    /* Ajuste del contenedor principal de detalle */
+    .container-detalle {
+        display: flex;
+        flex-direction: column; /* Apila imagen arriba e info abajo */
+        margin: 10px 3%;
+        height: auto;
+    }
+
+    /* Ajuste del contenido de texto */
+    .info-detalle {
+        padding: 25px 20px;
+        width: 100%;
+    }
+
+    /* Ajuste del Título */
+    .info-detalle h1 {
+        font-size: 2.2rem;
+        line-height: 1.1;
+        margin-bottom: 15px;
+    }
+
+    /* Ajuste del Botón "Pedir ahora" para que no se corte */
+    .info-detalle .btn-main {
+        display: block; /* Ocupa su propia línea */
+        width: 100%;    /* Ancho completo */
+        margin: 20px 0 0 0;
+        padding: 18px;  /* Más alto para mejor clic */
+        font-size: 1.1rem;
+        text-align: center;
+        border-radius: 15px; /* Estilo moderno */
+    }
+
+    /* Ajuste del Precio */
+    .info-detalle .price {
+        display: block;
+        font-size: 1.8rem;
+        margin-top: 10px;
+    }
 }
