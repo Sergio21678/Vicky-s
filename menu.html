@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vicky's | Sabores Memorables</title>
+    <title>Menú Completo | Los Gustitos de Vicky's</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="logo">
             <a href="index.html">
-                <img src="img/logo.png" alt="Vicky's Logo">
+                <img src="img/logo.png" alt="Los Gustitos de Vicky's">
             </a>
         </div>
         <nav>
             <a href="index.html">Inicio</a>
             <a href="menu.html">Ver Menú</a>
-            <a href="https://wa.me/51933056666" class="btn-cta" target="_blank">WhatsApp</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="https://wa.me/51933056666" class="btn-cta" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
         </nav>
     </header>
 
     <section class="hero">
         <h1>Sabores que celebran tus momentos</h1>
-        <p>Catering exclusivo para eventos inolvidables</p>
+        <p style="font-size: 1.3rem; color: white; margin-top: 10px;">Catering exclusivo para eventos inolvidables</p>
     </section>
 
     <main>
-        <h2 id="bocaditos">Bocaditos & Entremeses</h2>
-        <p class="subtitle">Pequeños bocados para grandes eventos</p>
+        <!-- A. PARA EMPEZAR (Bocaditos Fríos) -->
+        <div class="categoria-header">
+            <h2><i class="fas fa-snowflake"></i> Para Empezar</h2>
+            <p class="subtitle">Bocaditos Fríos - Ideal para recibir a los invitados</p>
+        </div>
         
         <div class="grid">
             <a href="bocaditos/ceviche-conchitas.html" class="card" style="text-decoration: none; display: block;">
@@ -42,26 +46,48 @@
             <a href="bocaditos/mini-causa.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-causa.jpg');"></div>
                 <div class="card-content">
-                    <h3>Mini Causa</h3>
-                    <p>Delicada masa de papa con relleno de Pollo o Atún.</p>
+                    <h3>Mini Causitas</h3>
+                    <p>Delicada masa de papa con relleno de Pollo o Palta.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
     
-            <a href="bocaditos/mini-hamburguesa.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-hamburguesa.jpg');"></div>
+            <a href="bocaditos/mini-triples.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-triples.jpg');"></div>
                 <div class="card-content">
-                    <h3>Mini-Hamburguesas</h3>
-                    <p>Carne seleccionada en pan artesanal con salsas de la casa.</p>
+                    <h3>Mini Triples Clásicos</h3>
+                    <p>Capas perfectas de pollo, jamón y queso.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </a>
+        </div>
+        
+        <p style="text-align: center; color: var(--dusty-olive); font-style: italic; margin: -30px 0 40px; padding: 0 8%;">
+            <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Los bocaditos fríos se venden por docena o ciento. 
+            <em>Choritos a la Chalaca disponibles sujeto a temporada.</em>
+        </p>
+
+        <!-- B. CALENTITOS Y CRUJIENTES (Bocaditos Calientes) -->
+        <div class="categoria-header">
+            <h2><i class="fas fa-fire"></i> Calentitos y Crujientes</h2>
+            <p class="subtitle">Bocaditos Calientes - Para deleitar a tus invitados</p>
+        </div>
+        
+        <div class="grid">
+            <a href="bocaditos/tequeños.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/tequeños.jpg');"></div>
+                <div class="card-content">
+                    <h3>Tequeños con Guacamole</h3>
+                    <p>Acompañados de nuestra crema de palta fresca.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
     
-            <a href="bocaditos/alitas.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/alitas.jpg');"></div>
+            <a href="bocaditos/wantan-queso.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/wantan-queso.jpg');"></div>
                 <div class="card-content">
-                    <h3>Alitas Vicky's</h3>
-                    <p>Elige entre nuestra salsa BBQ dulce o Búffalo picante.</p>
+                    <h3>Wantán Frito</h3>
+                    <p>Crocante masa wantán rellena de queso fundido.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
@@ -84,33 +110,6 @@
                 </div>
             </a>
     
-            <a href="bocaditos/petipan.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/petipan.jpg');"></div>
-                <div class="card-content">
-                    <h3>Petipan de Pollo</h3>
-                    <p>El clásico infaltable con crema de pollo especial.</p>
-                    <span class="price">S/ 0.00</span>
-                </div>
-            </a>
-    
-            <a href="bocaditos/mini-triples.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-triples.jpg');"></div>
-                <div class="card-content">
-                    <h3>Mini Triples</h3>
-                    <p>Capas perfectas de pollo, jamón y queso.</p>
-                    <span class="price">S/ 0.00</span>
-                </div>
-            </a>
-    
-            <a href="bocaditos/papas-ocopa.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/papas-ocopa.jpg');"></div>
-                <div class="card-content">
-                    <h3>Papitas con Ocopa</h3>
-                    <p>Sabor arequipeño tradicional en formato cocktail.</p>
-                    <span class="price">S/ 0.00</span>
-                </div>
-            </a>
-    
             <a href="bocaditos/canastitas-pollo.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/canastitas-pollo.jpg');"></div>
                 <div class="card-content">
@@ -120,43 +119,46 @@
                 </div>
             </a>
     
-            <a href="bocaditos/wantan-queso.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/wantan-queso.jpg');"></div>
-                <div class="card-content">
-                    <h3>Wantán con Queso</h3>
-                    <p>Crocante masa wantán rellena de queso fundido.</p>
-                    <span class="price">S/ 0.00</span>
-                </div>
-            </a>
-    
-            <a href="bocaditos/tequeños.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/tequeños.jpg');"></div>
-                <div class="card-content">
-                    <h3>Tequeños con Aguacate</h3>
-                    <p>Acompañados de nuestra crema de palta fresca.</p>
-                    <span class="price">S/ 0.00</span>
-                </div>
-            </a>
-    
             <a href="bocaditos/mini-tamalitos.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-tamalitos.jpg');"></div>
                 <div class="card-content">
-                    <h3>Mini-Tamalitos</h3>
+                    <h3>Mini Tamalitos</h3>
                     <p>El sabor criollo tradicional en un bocado.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
-        </div>
     
-        <h2 id="fondos">Platos de Fondo</h2>
-        <p class="subtitle">Banquetes diseñados para deleitar</p>
+            <a href="bocaditos/petipan.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/petipan.jpg');"></div>
+                <div class="card-content">
+                    <h3>Petipanes de Pollo Deshilachado</h3>
+                    <p>El clásico infaltable con crema de pollo especial.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </a>
+    
+            <a href="bocaditos/mini-hamburguesa.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/bocaditos/mini-hamburguesa.jpg');"></div>
+                <div class="card-content">
+                    <h3>Hamburguesitas</h3>
+                    <p>Carne o Pollo seleccionado en pan artesanal con salsas de la casa.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- C. PLATOS DE FONDO -->
+        <div class="categoria-header">
+            <h2><i class="fas fa-utensils"></i> Platos de Fondo</h2>
+            <p class="subtitle">El Corazón del Evento - Aquí destaca la tradición arequipeña</p>
+        </div>
     
         <div class="grid">
             <a href="platos/pure.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/platos/pure.jpg');"></div>
                 <div class="card-content">
-                    <h3>Puré con Asado de Carne o Pollo</h3>
-                    <p>Carne o Pollo braseado con puré de papa amarillo.</p>
+                    <h3>Asado de Carne con Puré</h3>
+                    <p>Carne braseada con puré de papa amarillo cremoso.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
@@ -170,11 +172,11 @@
                 </div>
             </a>
     
-            <a href="platos/chuleta.html" class="card" style="text-decoration: none; display: block;">
-                <div class="img-placeholder" style="background-image: url('imagenes/platos/chuleta.jpg');"></div>
+            <a href="platos/cenas-horno.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/platos/cenas-horno.jpg');"></div>
                 <div class="card-content">
-                    <h3>Chuleta al Gusto</h3>
-                    <p>Chuleta de Chancho o Carne a la Plancha.</p>
+                    <h3>Chancho al Horno</h3>
+                    <p>Chancho al horno con finas hierbas, jugoso y dorado.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
@@ -182,8 +184,17 @@
             <a href="platos/cenas-horno.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/platos/cenas-horno.jpg');"></div>
                 <div class="card-content">
-                    <h3>Cenas al Horno</h3>
-                    <p>Pollo o Chancho al horno con finas hierbas.</p>
+                    <h3>Pollo al Horno</h3>
+                    <p>Pollo al horno con finas hierbas, tierno y sabroso.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </a>
+    
+            <a href="platos/chuleta.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/platos/chuleta.jpg');"></div>
+                <div class="card-content">
+                    <h3>Chuleta de Cerdo o Carne</h3>
+                    <p>Chuleta a la plancha, jugosa y bien sazonada.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
@@ -191,16 +202,101 @@
             <a href="platos/pastel.html" class="card" style="text-decoration: none; display: block;">
                 <div class="img-placeholder" style="background-image: url('imagenes/platos/pastel.jpg');"></div>
                 <div class="card-content">
-                    <h3>Pastel de Tallarin o Papa</h3>
-                    <p>Pastel de Tallarin o Papa con chuleta de carne/chancho o Milanesa de Pollo y ensalada.</p>
+                    <h3>Pastel de Papa</h3>
+                    <p>Pastel de Papa con chuleta de carne/chancho o Milanesa de Pollo y ensalada.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </a>
+    
+            <a href="platos/pastel.html" class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('imagenes/platos/pastel.jpg');"></div>
+                <div class="card-content">
+                    <h3>Pastel de Tallarín</h3>
+                    <p>Pastel de Tallarín con chuleta de carne/chancho o Milanesa de Pollo y ensalada.</p>
                     <span class="price">S/ 0.00</span>
                 </div>
             </a>
         </div>
+
+        <!-- D. ZONA KIDS -->
+        <div class="categoria-header">
+            <h2><i class="fas fa-child"></i> Zona Kids</h2>
+            <p class="subtitle">Para los peques - Platos que los niños adoran</p>
+        </div>
+        
+        <div class="grid">
+            <div class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500');"></div>
+                <div class="card-content">
+                    <h3>Milanesa de Pollo</h3>
+                    <p>Pechuga de pollo empanizada, crujiente y deliciosa.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </div>
+    
+            <div class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500');"></div>
+                <div class="card-content">
+                    <h3>Chicharrón de Pollo</h3>
+                    <p>Pollo frito crocante, perfecto para los más pequeños.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </div>
+    
+            <div class="card" style="text-decoration: none; display: block;">
+                <div class="img-placeholder" style="background-image: url('https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=500');"></div>
+                <div class="card-content">
+                    <h3>Arroz Chaufa</h3>
+                    <p>Arroz frito estilo chifa, suave y sabroso.</p>
+                    <span class="price">S/ 0.00</span>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 Vicky's Catering. ¡Contáctanos!</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-clock"></i> Tiempo de Anticipación</h3>
+                <p>¿Con cuánto tiempo pedir?</p>
+                <p><strong>Mínimo 48 horas de anticipación</strong> para garantizar la mejor calidad en tu evento.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Zonas de Reparto</h3>
+                <p>Llevamos nuestros sabores a toda Arequipa:</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Centro Histórico</li>
+                    <li><i class="fas fa-check"></i> Yanahuara</li>
+                    <li><i class="fas fa-check"></i> Cayma</li>
+                    <li><i class="fas fa-check"></i> Sachaca</li>
+                    <li><i class="fas fa-check"></i> Y otros distritos</li>
+                </ul>
+                <p><em>Consulta disponibilidad para tu zona</em></p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-money-bill-wave"></i> Formas de Pago</h3>
+                <p>Aceptamos múltiples formas de pago:</p>
+                <ul>
+                    <li><i class="fab fa-whatsapp"></i> Yape</li>
+                    <li><i class="fab fa-whatsapp"></i> Plin</li>
+                    <li><i class="fas fa-university"></i> Transferencia Bancaria</li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fab fa-whatsapp"></i> Contáctanos</h3>
+                <p>¿Tienes dudas o quieres personalizar tu pedido?</p>
+                <a href="https://wa.me/51933056666?text=Hola!%20Quiero%20más%20información" class="whatsapp-btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Escríbenos por WhatsApp
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Los Gustitos de Vicky's. Calidad hecha con amor.</p>
+        </div>
     </footer>
 </body>
 </html>
