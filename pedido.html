@@ -10,10 +10,11 @@
         .pedido-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 5%;
+            padding: 40px 3%;
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 40px;
+            align-items: start;
         }
 
         .productos-section {
@@ -114,7 +115,10 @@
         .recibo-section {
             position: sticky;
             top: 120px;
-            height: fit-content;
+            /* Limitar la altura de la sección de recibo para que su contenido pueda hacer scroll
+               sin empujar la columna de productos. */
+            max-height: calc(100vh - 140px);
+            overflow: hidden;
             background: white;
             padding: 30px;
             border-radius: 20px;
@@ -133,6 +137,9 @@
             border-radius: 15px;
             padding: 20px;
             background: var(--parchment);
+            /* Hacer que el contenido del recibo pueda hacer scroll interno si es muy largo */
+            max-height: calc(100vh - 240px);
+            overflow-y: auto;
         }
 
         .recibo-header {
@@ -150,8 +157,9 @@
 
         .recibo-items {
             margin-bottom: 20px;
-            max-height: 400px;
-            overflow-y: auto;
+            /* Dejar que sea el contenedor .recibo-content quien gestione el scroll principal.
+               Aquí no limitamos demasiado la altura para evitar dobles scroll incómodos. */
+            overflow-y: visible;
         }
 
         .recibo-item {

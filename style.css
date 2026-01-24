@@ -102,7 +102,7 @@ body {
 /* HEADER Y LOGO */
 header {
     background: rgba(247, 242, 240, 0.98);
-    padding: 1rem 5%;
+    padding: 1rem 3%;
     height: auto;
     min-height: 100px;
     display: flex;
@@ -279,7 +279,7 @@ h1 {
 
 /* SOBRE MÍ */
 .sobre-mi {
-    padding: 100px 10%;
+    padding: 100px 6%;
     background: var(--parchment);
     text-align: center;
 }
@@ -307,8 +307,8 @@ h1 {
 
 /* HISTORIA */
 .historia {
-    padding: 80px 10%;
-    background: white;
+    padding: 80px 6%;
+        padding: 0 4%;
 }
 
 .historia-flex {
@@ -388,10 +388,10 @@ h2 i {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    padding: 0 8%;
-    margin-bottom: 5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    padding: 0 4%;
+    margin-bottom: 4rem;
 }
 
 .card {
@@ -477,7 +477,7 @@ h2 i {
 
 /* MODALIDADES DE SERVICIO */
 .modalidades {
-    padding: 80px 8%;
+    padding: 80px 6%;
     background: white;
     margin: 60px 0;
 }
@@ -530,7 +530,7 @@ h2 i {
 
 /* PACKS SUGERIDOS */
 .packs {
-    padding: 80px 8%;
+    padding: 80px 6%;
     background: var(--parchment);
     margin: 60px 0;
 }
@@ -608,7 +608,7 @@ h2 i {
 .container-detalle {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    margin: 50px 8%;
+    margin: 50px 4%;
     background: white;
     border-radius: 30px;
     overflow: hidden;
@@ -735,7 +735,7 @@ h2 i {
 
 /* FOOTER */
 footer {
-    padding: 60px 8% 40px;
+    padding: 60px 4% 40px;
     background: var(--graphite);
     color: var(--parchment);
     text-align: center;
@@ -943,7 +943,7 @@ footer {
 
 /* FORMULARIO DE CONTACTO */
 .contacto-section {
-    padding: 80px 8%;
+    padding: 80px 6%;
     background: white;
 }
 
