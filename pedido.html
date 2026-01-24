@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Pedido | Los Gustitos de Vicky's</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .pedido-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 5%;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+        }
+
+        .productos-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(49, 47, 47, 0.1);
+        }
+
+        .productos-section h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: var(--graphite);
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .producto-card {
+            background: var(--parchment);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--borde);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .producto-card:hover {
+            border-color: var(--primario);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(235, 148, 134, 0.2);
+        }
+
+        .producto-card.selected {
+            border-color: var(--primario);
+            background: rgba(235, 148, 134, 0.1);
+        }
+
+        .producto-img {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .producto-info {
+            padding: 15px;
+        }
+
+        .producto-info h4 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: var(--graphite);
+        }
+
+        .producto-precio {
+            color: var(--primario);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .cantidad-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .cantidad-control input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid var(--borde);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .cantidad-control input:focus {
+            outline: none;
+            border-color: var(--primario);
+        }
+
+        .error-mensaje {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-mensaje.show {
+            display: block;
+        }
+
+        .recibo-section {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(49, 47, 47, 0.1);
+        }
+
+        .recibo-section h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: var(--graphite);
+        }
+
+        .recibo-content {
+            border: 2px solid var(--borde);
+            border-radius: 15px;
+            padding: 20px;
+            background: var(--parchment);
+        }
+
+        .recibo-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--borde);
+        }
+
+        .recibo-header h3 {
+            margin: 0;
+            color: var(--graphite);
+            font-size: 1.5rem;
+        }
+
+        .recibo-items {
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .recibo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .recibo-item:last-child {
+            border-bottom: none;
+        }
+
+        .recibo-item-nombre {
+            flex: 1;
+            color: var(--texto);
+        }
+
+        .recibo-item-cantidad {
+            margin: 0 15px;
+            color: var(--texto-claro);
+        }
+
+        .recibo-item-precio {
+            font-weight: bold;
+            color: var(--graphite);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .recibo-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 3px solid var(--primario);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recibo-total-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--graphite);
+        }
+
+        .recibo-total-monto {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primario);
+        }
+
+        .recibo-vacio {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--texto-claro);
+        }
+
+        .btn-finalizar {
+            width: 100%;
+            background: var(--primario);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 6px 20px rgba(235, 148, 134, 0.4);
+        }
+
+        .btn-finalizar:hover:not(:disabled) {
+            background: var(--dusty-olive);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(100, 111, 88, 0.5);
+        }
+
+        .btn-finalizar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .categoria-pedido {
+            margin-bottom: 40px;
+        }
+
+        .categoria-pedido h3 {
+            color: var(--graphite);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--thistle);
+        }
+
+        @media (max-width: 1024px) {
+            .pedido-container {
+                grid-template-columns: 1fr;
+            }
+
+            .recibo-section {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .productos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        #recibo-imagen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="img/logo.jpg" alt="Los Gustitos de Vicky's">
+            </a>
+        </div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="menu.html">Ver Menú</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="https://wa.me/51933056666" class="btn-cta" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Realizar Pedido</h1>
+        <p style="font-size: 1.3rem; color: white; margin-top: 10px;">Selecciona tus productos (mínimo 20 unidades por producto)</p>
+    </section>
+
+    <main>
+        <div class="pedido-container">
+            <div class="productos-section">
+                <h2><i class="fas fa-utensils"></i> Selecciona tus productos</h2>
+                
+                <!-- Productos se cargarán aquí dinámicamente -->
+                <div id="productos-container"></div>
+            </div>
+
+            <div class="recibo-section">
+                <h2><i class="fas fa-receipt"></i> Resumen del Pedido</h2>
+                <div class="recibo-content" id="recibo-content">
+                    <div class="recibo-vacio">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: var(--thistle); margin-bottom: 15px;"></i>
+                        <p>Selecciona productos para ver el resumen</p>
+                    </div>
+                </div>
+                <button class="btn-finalizar" id="btn-finalizar" disabled>
+                    <i class="fab fa-whatsapp"></i> Enviar Pedido por WhatsApp
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="recibo-imagen"></div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-clock"></i> Tiempo de Anticipación</h3>
+                <p>¿Con cuánto tiempo pedir?</p>
+                <p><strong>Mínimo 72 horas de anticipación</strong> para garantizar la mejor calidad en tu evento.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-map-marker-alt"></i> Zonas de Reparto</h3>
+                <p>Llevamos nuestros sabores a toda Arequipa:</p>
+                <ul>
+                    <li><i class="fas fa-check"></i> Centro Histórico</li>
+                    <li><i class="fas fa-check"></i> Yanahuara</li>
+                    <li><i class="fas fa-check"></i> Cayma</li>
+                    <li><i class="fas fa-check"></i> Sachaca</li>
+                    <li><i class="fas fa-check"></i> Y otros distritos</li>
+                </ul>
+                <p><em>Consulta disponibilidad para tu zona</em></p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-money-bill-wave"></i> Formas de Pago</h3>
+                <p>Aceptamos múltiples formas de pago:</p>
+                <ul>
+                    <li><i class="fab fa-whatsapp"></i> Yape</li>
+                    <li><i class="fab fa-whatsapp"></i> Plin</li>
+                    <li><i class="fas fa-university"></i> Transferencia Bancaria</li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fab fa-whatsapp"></i> Contáctanos</h3>
+                <p>¿Tienes dudas o quieres personalizar tu pedido?</p>
+                <a href="https://wa.me/51933056666?text=Hola!%20Quiero%20más%20información" class="whatsapp-btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Escríbenos por WhatsApp
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Los Gustitos de Vicky's. Calidad hecha con amor.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Base de datos de productos con precios ficticios
+        const productos = [
+            // Para Empezar
+            { id: 1, nombre: 'Ceviche en Conchitas', imagen: 'imagenes/bocaditos/ceviche-conchitas.jpg', precio: 2.50, categoria: 'Para Empezar' },
+            { id: 2, nombre: 'Choritos a la Chalaca', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 2.00, categoria: 'Para Empezar' },
+            { id: 3, nombre: 'Mini Causitas de Pollo', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 1.80, categoria: 'Para Empezar' },
+            { id: 4, nombre: 'Mini Causitas de Atún', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 1.80, categoria: 'Para Empezar' },
+            
+            // Calentitos y Crujientes
+            { id: 5, nombre: 'Tequeños', imagen: 'imagenes/bocaditos/tequeños.jpg', precio: 1.50, categoria: 'Calentitos y Crujientes' },
+            { id: 6, nombre: 'Wantán Frito', imagen: 'imagenes/bocaditos/wantan-queso.jpg', precio: 1.60, categoria: 'Calentitos y Crujientes' },
+            { id: 7, nombre: 'Brochetas de Pollo', imagen: 'imagenes/bocaditos/brochetas.jpg', precio: 2.20, categoria: 'Calentitos y Crujientes' },
+            { id: 8, nombre: 'Muslitos de Pollo', imagen: 'imagenes/bocaditos/muslitos.jpg', precio: 2.50, categoria: 'Calentitos y Crujientes' },
+            { id: 9, nombre: 'Canastitas de Pollo', imagen: 'imagenes/bocaditos/canastitas-pollo.jpg', precio: 1.70, categoria: 'Calentitos y Crujientes' },
+            { id: 10, nombre: 'Mini Tamalitos', imagen: 'imagenes/bocaditos/mini-tamalitos.jpg', precio: 1.50, categoria: 'Calentitos y Crujientes' },
+            
+            // Los Sanguchitos
+            { id: 11, nombre: 'Petipanes con Pollo Deshilachado', imagen: 'imagenes/bocaditos/petipan.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
+            { id: 12, nombre: 'Hamburguesitas Caseras', imagen: 'imagenes/bocaditos/mini-hamburguesa.jpg', precio: 2.30, categoria: 'Los Sanguchitos' },
+            { id: 13, nombre: 'Mini Triples Clásicos', imagen: 'imagenes/bocaditos/mini-triples.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
+            { id: 14, nombre: 'Mini Triples Especial', imagen: 'imagenes/bocaditos/mini-triples.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
+            
+            // Platos de Fondo
+            { id: 15, nombre: 'Asado con Puré', imagen: 'imagenes/platos/pure.jpg', precio: 18.00, categoria: 'Platos de Fondo' },
+            { id: 16, nombre: 'Ají de Gallina', imagen: 'imagenes/platos/aji-gallina.jpg', precio: 16.00, categoria: 'Platos de Fondo' },
+            { id: 17, nombre: 'Chancho al Horno', imagen: 'imagenes/platos/cenas-horno.jpg', precio: 20.00, categoria: 'Platos de Fondo' },
+            { id: 18, nombre: 'Pollo al Horno', imagen: 'imagenes/platos/cenas-horno.jpg', precio: 18.00, categoria: 'Platos de Fondo' },
+            { id: 19, nombre: 'Chuleta Completa', imagen: 'imagenes/platos/chuleta.jpg', precio: 17.00, categoria: 'Platos de Fondo' },
+            { id: 20, nombre: 'Pastel de Papa Premium', imagen: 'imagenes/platos/pastel.jpg', precio: 19.00, categoria: 'Platos de Fondo' },
+            { id: 21, nombre: 'Pastel de Tallarín Premium', imagen: 'imagenes/platos/pastel.jpg', precio: 19.00, categoria: 'Platos de Fondo' },
+            
+            // Zona Kids
+            { id: 22, nombre: 'Milanesa de Pollo', imagen: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500', precio: 12.00, categoria: 'Zona Kids' },
+            { id: 23, nombre: 'Chicharrón de Pollo', imagen: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500', precio: 12.00, categoria: 'Zona Kids' },
+            { id: 24, nombre: 'Arroz Chaufa', imagen: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=500', precio: 10.00, categoria: 'Zona Kids' }
+        ];
+
+        // Estado del pedido
+        const pedido = {};
+
+        // Renderizar productos
+        function renderizarProductos() {
+            const container = document.getElementById('productos-container');
+            const categorias = [...new Set(productos.map(p => p.categoria))];
+            
+            categorias.forEach(categoria => {
+                const categoriaDiv = document.createElement('div');
+                categoriaDiv.className = 'categoria-pedido';
+                categoriaDiv.innerHTML = `<h3>${categoria}</h3><div class="productos-grid"></div>`;
+                
+                const grid = categoriaDiv.querySelector('.productos-grid');
+                const productosCategoria = productos.filter(p => p.categoria === categoria);
+                
+                productosCategoria.forEach(producto => {
+                    const card = document.createElement('div');
+                    card.className = 'producto-card';
+                    card.dataset.productoId = producto.id;
+                    card.innerHTML = `
+                        <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
+                        <div class="producto-info">
+                            <h4>${producto.nombre}</h4>
+                            <div class="producto-precio">S/ ${producto.precio.toFixed(2)}</div>
+                            <div class="cantidad-control">
+                                <label>Cantidad:</label>
+                                <input type="number" 
+                                       min="0" 
+                                       value="0" 
+                                       data-producto-id="${producto.id}"
+                                       class="cantidad-input">
+                                <span class="error-mensaje">Mínimo 20 unidades</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                container.appendChild(categoriaDiv);
+            });
+
+            // Event listeners para inputs de cantidad
+            // Usamos solo 'change' para validar cuando el usuario termina de editar
+            // El uso de 'input' bloqueaba la escritura de números multi-dígito (p.ej. "20").
+            document.querySelectorAll('.cantidad-input').forEach(input => {
+                input.addEventListener('change', manejarCambioCantidad);
+            });
+        }
+
+        // Manejar cambio de cantidad
+        function manejarCambioCantidad(e) {
+            const productoId = parseInt(e.target.dataset.productoId);
+            const cantidad = parseInt(e.target.value) || 0;
+            const producto = productos.find(p => p.id === productoId);
+            const card = e.target.closest('.producto-card');
+            const errorMensaje = e.target.nextElementSibling;
+
+            if (cantidad > 0 && cantidad < 20) {
+                errorMensaje.classList.add('show');
+                e.target.value = 0;
+                delete pedido[productoId];
+                card.classList.remove('selected');
+            } else {
+                errorMensaje.classList.remove('show');
+                if (cantidad >= 20) {
+                    pedido[productoId] = cantidad;
+                    card.classList.add('selected');
+                } else {
+                    delete pedido[productoId];
+                    card.classList.remove('selected');
+                }
+            }
+
+            actualizarRecibo();
+        }
+
+        // Actualizar recibo
+        function actualizarRecibo() {
+            const reciboContent = document.getElementById('recibo-content');
+            const btnFinalizar = document.getElementById('btn-finalizar');
+            const items = Object.keys(pedido);
+
+            if (items.length === 0) {
+                reciboContent.innerHTML = `
+                    <div class="recibo-vacio">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; color: var(--thistle); margin-bottom: 15px;"></i>
+                        <p>Selecciona productos para ver el resumen</p>
+                    </div>
+                `;
+                btnFinalizar.disabled = true;
+                return;
+            }
+
+            let total = 0;
+            const fecha = new Date();
+            const fechaFormateada = fecha.toLocaleDateString('es-PE', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            let html = `
+                <div class="recibo-header">
+                    <h3>Los Gustitos de Vicky's</h3>
+                    <p style="margin: 5px 0; color: var(--texto-claro); font-size: 0.9rem;">Pedido #${Date.now().toString().slice(-6)}</p>
+                    <p style="margin: 5px 0; color: var(--texto-claro); font-size: 0.85rem;">${fechaFormateada}</p>
+                </div>
+                <div class="recibo-items">
+            `;
+
+            items.forEach(productoId => {
+                const producto = productos.find(p => p.id === parseInt(productoId));
+                const cantidad = pedido[productoId];
+                const subtotal = producto.precio * cantidad;
+                total += subtotal;
+
+                html += `
+                    <div class="recibo-item">
+                        <div class="recibo-item-nombre">
+                            ${producto.nombre}<br>
+                            <small style="color: var(--texto-claro); font-size: 0.85rem;">S/ ${producto.precio.toFixed(2)} c/u</small>
+                        </div>
+                        <div class="recibo-item-cantidad">x${cantidad}</div>
+                        <div class="recibo-item-precio">S/ ${subtotal.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+                <div class="recibo-total">
+                    <div class="recibo-total-label">Total:</div>
+                    <div class="recibo-total-monto">S/ ${total.toFixed(2)}</div>
+                </div>
+            `;
+
+            reciboContent.innerHTML = html;
+            btnFinalizar.disabled = false;
+        }
+
+        // Generar imagen del recibo y redirigir a WhatsApp
+        async function finalizarPedido() {
+            const btnFinalizar = document.getElementById('btn-finalizar');
+            const reciboContent = document.getElementById('recibo-content');
+            const reciboImagen = document.getElementById('recibo-imagen');
+            
+            // Deshabilitar botón y mostrar loading
+            btnFinalizar.disabled = true;
+            const textoOriginal = btnFinalizar.innerHTML;
+            btnFinalizar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando recibo...';
+            
+            // Crear una copia del recibo para la imagen con mejor formato
+            reciboImagen.innerHTML = reciboContent.innerHTML;
+            reciboImagen.style.display = 'block';
+            reciboImagen.style.background = 'white';
+            reciboImagen.style.padding = '40px';
+            reciboImagen.style.maxWidth = '600px';
+            reciboImagen.style.margin = '0 auto';
+            reciboImagen.style.borderRadius = '20px';
+            reciboImagen.style.boxShadow = '0 4px 15px rgba(49, 47, 47, 0.1)';
+            reciboImagen.style.position = 'absolute';
+            reciboImagen.style.left = '-9999px';
+
+            try {
+                // Esperar un momento para que se renderice
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Generar imagen usando html2canvas
+                const canvas = await html2canvas(reciboImagen, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
+                });
+
+                // Convertir canvas a blob
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        throw new Error('Error al generar la imagen');
+                    }
+                    
+                    // Crear URL temporal para la imagen
+                    const imageUrl = URL.createObjectURL(blob);
+                    
+                    // Crear mensaje para WhatsApp
+                    const items = Object.keys(pedido);
+                    let mensaje = '¡Hola! 👋\n\n';
+                    mensaje += 'Quiero realizar el siguiente pedido:\n\n';
+                    
+                    items.forEach(productoId => {
+                        const producto = productos.find(p => p.id === parseInt(productoId));
+                        const cantidad = pedido[productoId];
+                        mensaje += `• ${producto.nombre}: ${cantidad} unidades\n`;
+                    });
+                    
+                    const total = items.reduce((sum, productoId) => {
+                        const producto = productos.find(p => p.id === parseInt(productoId));
+                        return sum + (producto.precio * pedido[productoId]);
+                    }, 0);
+                    
+                    mensaje += `\n💰 Total: S/ ${total.toFixed(2)}\n\n`;
+                    mensaje += '📎 Adjunto el recibo del pedido en la siguiente imagen.';
+                    
+                    // Codificar mensaje para URL
+                    const mensajeCodificado = encodeURIComponent(mensaje);
+                    
+                    // Crear enlace de WhatsApp
+                    const whatsappUrl = `https://wa.me/51933056666?text=${mensajeCodificado}`;
+                    
+                    // Crear enlace de descarga para la imagen
+                    const link = document.createElement('a');
+                    link.href = imageUrl;
+                    link.download = `pedido-vickys-${Date.now()}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Mostrar mensaje informativo
+                    alert('✅ Recibo descargado exitosamente.\n\nAhora se abrirá WhatsApp. Por favor:\n1. Adjunta la imagen del recibo que se descargó\n2. Envía el mensaje');
+                    
+                    // Redirigir a WhatsApp después de un breve delay
+                    setTimeout(() => {
+                        window.open(whatsappUrl, '_blank');
+                        
+                        // Limpiar después de un momento
+                        setTimeout(() => {
+                            URL.revokeObjectURL(imageUrl);
+                            reciboImagen.style.display = 'none';
+                            reciboImagen.innerHTML = '';
+                            reciboImagen.style.position = 'static';
+                            btnFinalizar.innerHTML = textoOriginal;
+                            btnFinalizar.disabled = false;
+                        }, 2000);
+                    }, 1000);
+                }, 'image/png', 0.95);
+            } catch (error) {
+                console.error('Error al generar imagen:', error);
+                alert('❌ Hubo un error al generar el recibo. Por favor, intenta nuevamente.');
+                btnFinalizar.innerHTML = textoOriginal;
+                btnFinalizar.disabled = false;
+                reciboImagen.style.display = 'none';
+                reciboImagen.innerHTML = '';
+                reciboImagen.style.position = 'static';
+            }
+        }
+
+        // Event listener para botón finalizar
+        document.getElementById('btn-finalizar').addEventListener('click', finalizarPedido);
+
+        // Inicializar
+        renderizarProductos();
+    </script>
+</body>
+</html>
