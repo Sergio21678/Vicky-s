@@ -225,12 +225,19 @@ nav a:hover {
 }
 
 .hero-home .foto-principal {
-    width: 300px;
-    height: 300px;
+    width: 520px !important;
+    height: 520px !important;
+    max-width: 84vw;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
-    object-fit: cover;
-    border: 8px solid var(--parchment);
-    box-shadow: 0 10px 30px rgba(49, 47, 47, 0.3);
+    display: block;
+    overflow: hidden;
+    background-size: 100% !important;
+    background-position: 40% 10% !important;
+    background-repeat: no-repeat;
+    background-color: var(--parchment);
+    border: 10px solid var(--parchment);
+    box-shadow: 0 12px 36px rgba(49, 47, 47, 0.35);
     margin-bottom: 2rem;
     animation: fadeInUp 1s ease-out, float 3s ease-in-out infinite;
     animation-delay: 0.2s;
