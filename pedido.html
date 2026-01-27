@@ -80,26 +80,66 @@
             margin-bottom: 10px;
         }
 
-        .cantidad-control {
+        /* Controles para selección de paquetes */
+        .bundle-controls {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
         }
 
-        .cantidad-control input {
-            width: 80px;
-            padding: 8px;
-            border: 2px solid var(--borde);
+        .coming-soon {
+            display: inline-block;
+            background: var(--thistle);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .bundle-controls label {
+            font-size: 0.9rem;
+            color: var(--graphite);
+        }
+
+        .bundle-select, .packages-input {
+            padding: 8px 10px;
             border-radius: 8px;
-            text-align: center;
-            font-size: 1rem;
+            border: 2px solid var(--borde);
+            font-size: 0.95rem;
+            background: white;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .cantidad-control input:focus {
-            outline: none;
-            border-color: var(--primario);
+        .packages-input { text-align: center; }
+
+        .small-note { font-size: 0.85rem; color: var(--texto-claro); }
+
+        .bundle-controls .error-mensaje { margin-top: 6px; }
+
+        /* Estilo visual para el select de paquetes acorde al theme
+           Usamos fondo blanco para asegurar legibilidad del texto y
+           aplicamos un pequeño borde y sombra con los colores del sitio. */
+        .bundle-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: #ffffff;
+            color: var(--graphite);
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 2px solid var(--borde);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(235,148,134,0.08);
+            width: 100%;
         }
+
+        .bundle-select:focus {
+            outline: 3px solid rgba(235,148,134,0.12);
+        }
+
+        /* Agregar un indicador visual de select (flecha) en navegadores que lo soporten */
+        .bundle-select { background-image: linear-gradient(45deg, transparent 50%, var(--borde) 50%), linear-gradient(135deg, var(--borde) 50%, transparent 50%); background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px); background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 
         .error-mensaje {
             color: #dc3545;
@@ -268,8 +308,20 @@
 
         @media (max-width: 768px) {
             .productos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
+        }
+
+        /* Mejoras para pantallas móviles pequeñas */
+        @media (max-width: 480px) {
+            .productos-grid { grid-template-columns: 1fr; gap: 12px; }
+            .producto-card { display: flex; gap: 12px; align-items: stretch; }
+            .producto-img { width: 40%; min-height: 110px; height: auto; background-size: cover; }
+            .producto-info { padding: 10px; width: 60%; }
+            .producto-info h4 { font-size: 0.95rem; }
+            .bundle-controls { gap: 6px; }
+            .bundle-select, .packages-input { font-size: 0.95rem; }
+            .packages-input { width: 60%; margin: 0 auto; }
         }
 
         #recibo-imagen {
@@ -369,115 +421,151 @@
     </footer>
 
     <script>
-        // Base de datos de productos con precios ficticios
+        // Base de datos de productos con precios por paquete (valores en soles)
+        // Notas: bocaditos y similares se venden a partir de 20 unidades (tamaños: 20/50/100)
+        // Platos de Fondo y Zona Kids: tamaños típicos 10/50 (se agrega 20 estimado = 10*2 - 35)
         const productos = [
-            // Para Empezar
-            { id: 1, nombre: 'Ceviche en Conchitas', imagen: 'imagenes/bocaditos/ceviche-conchitas.jpg', precio: 2.50, categoria: 'Para Empezar' },
-            { id: 2, nombre: 'Choritos a la Chalaca', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 2.00, categoria: 'Para Empezar' },
-            { id: 3, nombre: 'Mini Causitas de Pollo', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 1.80, categoria: 'Para Empezar' },
-            { id: 4, nombre: 'Mini Causitas de Atún', imagen: 'imagenes/bocaditos/mini-causa.jpg', precio: 1.80, categoria: 'Para Empezar' },
-            
+            // Para Empezar (bocaditos)
+            { id: 1, nombre: 'Ceviche en Conchitas', imagen: 'imagenes/bocaditos/ceviche-conchitas.jpg', bundles: {20:95, 50:180, 100:350}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 2, nombre: 'Choritos a la Chalaca', imagen: 'imagenes/bocaditos/choritos.jpg', bundles: {20:90, 50:170, 100:330}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 3, nombre: 'Mini Causitas de Pollo', imagen: 'imagenes/bocaditos/mini-causa-pollo.jpg', bundles: {20:85, 50:160, 100:310}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 4, nombre: 'Mini Causitas de Atún', imagen: 'imagenes/bocaditos/mini-causa-atun.png', bundles: {20:75, 50:145, 100:280}, categoria: 'Para Empezar', minUnits: 20 },
+
             // Calentitos y Crujientes
-            { id: 5, nombre: 'Tequeños', imagen: 'imagenes/bocaditos/tequeños.jpg', precio: 1.50, categoria: 'Calentitos y Crujientes' },
-            { id: 6, nombre: 'Wantán Frito', imagen: 'imagenes/bocaditos/wantan-queso.jpg', precio: 1.60, categoria: 'Calentitos y Crujientes' },
-            { id: 7, nombre: 'Brochetas de Pollo', imagen: 'imagenes/bocaditos/brochetas.jpg', precio: 2.20, categoria: 'Calentitos y Crujientes' },
-            { id: 8, nombre: 'Muslitos de Pollo', imagen: 'imagenes/bocaditos/muslitos.jpg', precio: 2.50, categoria: 'Calentitos y Crujientes' },
-            { id: 9, nombre: 'Canastitas de Pollo', imagen: 'imagenes/bocaditos/canastitas-pollo.jpg', precio: 1.70, categoria: 'Calentitos y Crujientes' },
-            { id: 10, nombre: 'Mini Tamalitos', imagen: 'imagenes/bocaditos/mini-tamalitos.jpg', precio: 1.50, categoria: 'Calentitos y Crujientes' },
-            
+            { id: 5, nombre: 'Tequeños', imagen: 'imagenes/bocaditos/tequeños.jpg', bundles: {20:70, 50:130, 100:260}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 6, nombre: 'Wantán Frito', imagen: 'imagenes/bocaditos/wantanes.jpeg', bundles: {20:75, 50:145, 100:300}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 7, nombre: 'Brochetas de Pollo', imagen: 'imagenes/bocaditos/brochetas.jpg', bundles: {20:100, 50:190, 100:370}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 8, nombre: 'Muslitos de Pollo', imagen: 'imagenes/bocaditos/muslitos-pollo.jpg', bundles: {20:90, 50:175, 100:340}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 9, nombre: 'Canastitas de Pollo', imagen: 'imagenes/bocaditos/canastitas-polllo.avif', bundles: null, comingSoon: true, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 10, nombre: 'Mini Tamalitos', imagen: 'imagenes/bocaditos/minitamalitos.jpeg', bundles: {20:100, 50:190, 100:370}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+
             // Los Sanguchitos
-            { id: 11, nombre: 'Petipanes con Pollo Deshilachado', imagen: 'imagenes/bocaditos/petipan.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
-            { id: 12, nombre: 'Hamburguesitas Caseras', imagen: 'imagenes/bocaditos/mini-hamburguesa.jpg', precio: 2.30, categoria: 'Los Sanguchitos' },
-            { id: 13, nombre: 'Mini Triples Clásicos', imagen: 'imagenes/bocaditos/mini-triples.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
-            { id: 14, nombre: 'Mini Triples Especial', imagen: 'imagenes/bocaditos/mini-triples.jpg', precio: 2.00, categoria: 'Los Sanguchitos' },
-            
-            // Platos de Fondo
-            { id: 15, nombre: 'Asado con Puré', imagen: 'imagenes/platos/pure.jpg', precio: 18.00, categoria: 'Platos de Fondo' },
-            { id: 16, nombre: 'Ají de Gallina', imagen: 'imagenes/platos/aji-gallina.jpg', precio: 16.00, categoria: 'Platos de Fondo' },
-            { id: 17, nombre: 'Chancho al Horno', imagen: 'imagenes/platos/cenas-horno.jpg', precio: 20.00, categoria: 'Platos de Fondo' },
-            { id: 18, nombre: 'Pollo al Horno', imagen: 'imagenes/platos/cenas-horno.jpg', precio: 18.00, categoria: 'Platos de Fondo' },
-            { id: 19, nombre: 'Chuleta Completa', imagen: 'imagenes/platos/chuleta.jpg', precio: 17.00, categoria: 'Platos de Fondo' },
-            { id: 20, nombre: 'Pastel de Papa Premium', imagen: 'imagenes/platos/pastel.jpg', precio: 19.00, categoria: 'Platos de Fondo' },
-            { id: 21, nombre: 'Pastel de Tallarín Premium', imagen: 'imagenes/platos/pastel.jpg', precio: 19.00, categoria: 'Platos de Fondo' },
-            
-            // Zona Kids
-            { id: 22, nombre: 'Milanesa de Pollo', imagen: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500', precio: 12.00, categoria: 'Zona Kids' },
-            { id: 23, nombre: 'Chicharrón de Pollo', imagen: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500', precio: 12.00, categoria: 'Zona Kids' },
-            { id: 24, nombre: 'Arroz Chaufa', imagen: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=500', precio: 10.00, categoria: 'Zona Kids' }
+            { id: 11, nombre: 'Petipanes con Pollo Deshilachado', imagen: 'imagenes/bocaditos/petipan.jpg', bundles: {50:90}, categoria: 'Los Sanguchitos', minUnits: 50 },
+            { id: 12, nombre: 'Hamburguesitas Caseras', imagen: 'imagenes/bocaditos/hamburguesitas.jpg', bundles: {20:80, 50:150, 100:300}, categoria: 'Los Sanguchitos', minUnits: 20 },
+            { id: 13, nombre: 'Mini Triples Clásicos', imagen: 'imagenes/bocaditos/minitriples.jpg', bundles: null, comingSoon: true, categoria: 'Los Sanguchitos', minUnits: 20 },
+            { id: 14, nombre: 'Mini Triples Especial', imagen: 'imagenes/bocaditos/mini-triples.jpg', bundles: null, comingSoon: true, categoria: 'Los Sanguchitos', minUnits: 20 },
+
+            // Platos de Fondo (tamaños 10 / 20 (estimado) / 50)
+            // 20 = 10*2 - 35 (estimación solicitada)
+            { id: 15, nombre: 'Asado con Puré', imagen: 'imagenes/platos/asado-pure.jpeg', bundles: {10:180, 20: (180*2 - 35), 50:830}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 16, nombre: 'Ají de Gallina', imagen: 'imagenes/platos/aji-gallina.jpg', bundles: {10:100, 20: (100*2 - 35), 50:460}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 17, nombre: 'Chancho al Horno', imagen: 'imagenes/platos/chancho-horno.avif', bundles: {10:200, 20: (200*2 - 35), 50:950}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 18, nombre: 'Pollo al Horno', imagen: 'imagenes/platos/pollo-horno.jpg', bundles: {10:160, 20: (160*2 - 35), 50:760}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 19, nombre: 'Chuleta Completa', imagen: 'imagenes/platos/chuleta-completo.jpg', bundles: {10:190, 20: (190*2 - 35), 50:920}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 20, nombre: 'Pastel de Papa Premium', imagen: 'imagenes/platos/pastel-papa-premium.png', bundles: {10:200, 20: (200*2 - 35), 50:950}, categoria: 'Platos de Fondo', minUnits: 10 },
+            { id: 21, nombre: 'Pastel de Tallarín Premium', imagen: 'imagenes/platos/pastel-tallarin-milanesa.png', bundles: {10:200, 20: (200*2 - 35), 50:950}, categoria: 'Platos de Fondo', minUnits: 10 },
+
+            // Zona Kids (tamaños 10 / 20 estimado / 50)
+            { id: 22, nombre: 'Milanesa de Pollo', imagen: 'imagenes/platos/milanesa-pollo.jpg', bundles: {10:110, 20: (110*2 - 35), 50:500}, categoria: 'Zona Kids', minUnits: 10 },
+            { id: 23, nombre: 'Chicharrón de Pollo', imagen: 'imagenes/platos/chicharron-pollo.jpg', bundles: {10:110, 20: (110*2 - 35), 50:500}, categoria: 'Zona Kids', minUnits: 10 },
+            { id: 24, nombre: 'Arroz Chaufa', imagen: 'imagenes/platos/chaufa.avif', bundles: {10:95, 20: (95*2 - 35), 50:450}, categoria: 'Zona Kids', minUnits: 10 }
         ];
 
         // Estado del pedido
         const pedido = {};
 
-        // Renderizar productos
+        // Renderizar productos (ahora con selección de paquetes)
         function renderizarProductos() {
             const container = document.getElementById('productos-container');
+            container.innerHTML = '';
             const categorias = [...new Set(productos.map(p => p.categoria))];
-            
+
             categorias.forEach(categoria => {
                 const categoriaDiv = document.createElement('div');
                 categoriaDiv.className = 'categoria-pedido';
                 categoriaDiv.innerHTML = `<h3>${categoria}</h3><div class="productos-grid"></div>`;
-                
+
                 const grid = categoriaDiv.querySelector('.productos-grid');
                 const productosCategoria = productos.filter(p => p.categoria === categoria);
-                
+
                 productosCategoria.forEach(producto => {
                     const card = document.createElement('div');
                     card.className = 'producto-card';
                     card.dataset.productoId = producto.id;
+
+                    const minUnits = producto.minUnits || 20;
+
+                    // Si el producto está marcado como próximamente (comingSoon) o no tiene bundles
+                    if (producto.comingSoon || !producto.bundles) {
+                        card.innerHTML = `
+                            <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
+                            <div class="producto-info">
+                                <h4>${producto.nombre}</h4>
+                                <div class="bundle-controls">
+                                    <div class="coming-soon">Pronto</div>
+                                    <div class="small-note">Disponibilidad y precio próximamente</div>
+                                </div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                        return;
+                    }
+
+                    // Construir opciones del select con precios por paquete (sin cantidad de paquetes)
+                    const bundleSizes = Object.keys(producto.bundles).map(n => parseInt(n)).sort((a,b)=>a-b);
+                    let optionsHtml = '<option value="">Seleccionar paquete</option>';
+                    bundleSizes.forEach(size => {
+                        const price = producto.bundles[size];
+                        optionsHtml += `<option value="${size}">${size} unidades — S/ ${Number(price).toFixed(2)}</option>`;
+                    });
+
                     card.innerHTML = `
                         <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
                         <div class="producto-info">
                             <h4>${producto.nombre}</h4>
-                            <div class="producto-precio">S/ ${producto.precio.toFixed(2)}</div>
-                            <div class="cantidad-control">
-                                <label>Cantidad:</label>
-                                <input type="number" 
-                                       min="0" 
-                                       value="0" 
-                                       data-producto-id="${producto.id}"
-                                       class="cantidad-input">
-                                <span class="error-mensaje">Mínimo 20 unidades</span>
+                            <div class="bundle-controls">
+                                <label>Paquete:</label>
+                                <select class="bundle-select" data-producto-id="${producto.id}">${optionsHtml}</select>
+                                <div class="small-note">Mínimo ${minUnits} unidades por producto</div>
+                                <div class="error-mensaje">Cantidad mínima no alcanzada</div>
                             </div>
                         </div>
                     `;
+
                     grid.appendChild(card);
                 });
-                
+
                 container.appendChild(categoriaDiv);
             });
 
-            // Event listeners para inputs de cantidad
-            // Usamos solo 'change' para validar cuando el usuario termina de editar
-            // El uso de 'input' bloqueaba la escritura de números multi-dígito (p.ej. "20").
-            document.querySelectorAll('.cantidad-input').forEach(input => {
-                input.addEventListener('change', manejarCambioCantidad);
-            });
+            // Listener para selects (selección de paquete implica 1 paquete)
+            document.querySelectorAll('.bundle-select').forEach(sel => sel.addEventListener('change', manejarCambioPaquete));
         }
 
-        // Manejar cambio de cantidad
-        function manejarCambioCantidad(e) {
+        // Manejar cambios en paquetes (select o número de paquetes)
+        function manejarCambioPaquete(e) {
             const productoId = parseInt(e.target.dataset.productoId);
-            const cantidad = parseInt(e.target.value) || 0;
-            const producto = productos.find(p => p.id === productoId);
-            const card = e.target.closest('.producto-card');
-            const errorMensaje = e.target.nextElementSibling;
+            const card = document.querySelector(`.producto-card[data-producto-id="${productoId}"]`);
 
-            if (cantidad > 0 && cantidad < 20) {
+            const select = card.querySelector('.bundle-select');
+            const errorMensaje = card.querySelector('.error-mensaje');
+            const bundleSize = parseInt(select.value);
+
+            const producto = productos.find(p => p.id === productoId);
+            // cuando no hay selección (value === "") eliminar del pedido
+            if (!bundleSize) {
+                delete pedido[productoId];
+                card.classList.remove('selected');
+                errorMensaje.classList.remove('show');
+                actualizarRecibo();
+                return;
+            }
+
+            const bundlePrice = Number(producto.bundles[bundleSize]);
+            // ahora cada selección corresponde a un paquete (cantidad = 1)
+            const packages = 1;
+            const totalUnits = bundleSize * packages;
+
+            const minUnits = producto.minUnits || 20;
+
+            if (totalUnits < minUnits) {
                 errorMensaje.classList.add('show');
-                e.target.value = 0;
                 delete pedido[productoId];
                 card.classList.remove('selected');
             } else {
                 errorMensaje.classList.remove('show');
-                if (cantidad >= 20) {
-                    pedido[productoId] = cantidad;
-                    card.classList.add('selected');
-                } else {
-                    delete pedido[productoId];
-                    card.classList.remove('selected');
-                }
+                pedido[productoId] = { bundleSize, packages, bundlePrice, totalUnits };
+                card.classList.add('selected');
             }
 
             actualizarRecibo();
@@ -521,18 +609,19 @@
 
             items.forEach(productoId => {
                 const producto = productos.find(p => p.id === parseInt(productoId));
-                const cantidad = pedido[productoId];
-                const subtotal = producto.precio * cantidad;
+                const entry = pedido[productoId];
+                const subtotal = entry.bundlePrice * entry.packages;
                 total += subtotal;
 
                 html += `
                     <div class="recibo-item">
                         <div class="recibo-item-nombre">
                             ${producto.nombre}<br>
-                            <small style="color: var(--texto-claro); font-size: 0.85rem;">S/ ${producto.precio.toFixed(2)} c/u</small>
+                            <small style="color: var(--texto-claro); font-size: 0.85rem;">${entry.packages} x ${entry.bundleSize} unidades — S/ ${entry.bundlePrice.toFixed(2)} por paquete</small>
                         </div>
-                        <div class="recibo-item-cantidad">x${cantidad}</div>
+                        <div class="recibo-item-cantidad">${entry.totalUnits} u.</div>
                         <div class="recibo-item-precio">S/ ${subtotal.toFixed(2)}</div>
+                        <div style="margin-left:12px;"><button class="remove-item" data-producto-id="${producto.id}" style="background:transparent;border:1px solid var(--borde);padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--graphite);">Quitar</button></div>
                     </div>
                 `;
             });
@@ -546,6 +635,21 @@
             `;
 
             reciboContent.innerHTML = html;
+                // Adjuntar listeners a botones Quitar
+                document.querySelectorAll('.remove-item').forEach(btn => {
+                    btn.addEventListener('click', (ev) => {
+                        const id = parseInt(ev.currentTarget.dataset.productoId);
+                        // remover del pedido y resetear select
+                        delete pedido[id];
+                        const card = document.querySelector(`.producto-card[data-producto-id="${id}"]`);
+                        if (card) {
+                            const sel = card.querySelector('.bundle-select');
+                            if (sel) sel.value = '';
+                            card.classList.remove('selected');
+                        }
+                        actualizarRecibo();
+                    });
+                });
             btnFinalizar.disabled = false;
         }
 
@@ -593,20 +697,20 @@
                     // Crear URL temporal para la imagen
                     const imageUrl = URL.createObjectURL(blob);
                     
-                    // Crear mensaje para WhatsApp
+                    // Crear mensaje para WhatsApp con datos de paquetes
                     const items = Object.keys(pedido);
                     let mensaje = '¡Hola! 👋\n\n';
                     mensaje += 'Quiero realizar el siguiente pedido:\n\n';
                     
                     items.forEach(productoId => {
                         const producto = productos.find(p => p.id === parseInt(productoId));
-                        const cantidad = pedido[productoId];
-                        mensaje += `• ${producto.nombre}: ${cantidad} unidades\n`;
+                        const entry = pedido[productoId];
+                        mensaje += `• ${producto.nombre}: ${entry.totalUnits} unidades (${entry.packages} x ${entry.bundleSize}) — S/ ${(entry.bundlePrice * entry.packages).toFixed(2)}\n`;
                     });
                     
                     const total = items.reduce((sum, productoId) => {
-                        const producto = productos.find(p => p.id === parseInt(productoId));
-                        return sum + (producto.precio * pedido[productoId]);
+                        const entry = pedido[productoId];
+                        return sum + (entry.bundlePrice * entry.packages);
                     }, 0);
                     
                     mensaje += `\n💰 Total: S/ ${total.toFixed(2)}\n\n`;
