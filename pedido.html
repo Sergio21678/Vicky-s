@@ -479,22 +479,22 @@
         // Platos de Fondo y Zona Kids: tamaños típicos 10/50 (se agrega 20 estimado = 10*2 - 35)
         const productos = [
             // Para Empezar (bocaditos)
-            { id: 1, nombre: 'Ceviche en Conchitas', imagen: 'imagenes/bocaditos/ceviche-conchitas.jpg', bundles: {20:95, 50:180, 100:350}, categoria: 'Para Empezar', minUnits: 20 },
-            { id: 2, nombre: 'Choritos a la Chalaca', imagen: 'imagenes/bocaditos/choritos.jpg', bundles: {20:90, 50:170, 100:330}, categoria: 'Para Empezar', minUnits: 20 },
-            { id: 3, nombre: 'Mini Causitas de Pollo', imagen: 'imagenes/bocaditos/mini-causa-pollo.jpg', bundles: {20:85, 50:160, 100:310}, categoria: 'Para Empezar', minUnits: 20 },
-            { id: 4, nombre: 'Mini Causitas de Atún', imagen: 'imagenes/bocaditos/mini-causa-atun.png', bundles: {20:75, 50:145, 100:280}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 1, nombre: 'Ceviche en Conchitas', imagen: 'imagenes/bocaditos/ceviche-conchitas.jpg', bundles: {20:38, 50:95, 100:180}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 2, nombre: 'Choritos a la Chalaca', imagen: 'imagenes/bocaditos/choritos.jpg', bundles: {20:36, 50:90, 100:170}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 3, nombre: 'Mini Causitas de Pollo', imagen: 'imagenes/bocaditos/mini-causa-pollo.jpg', bundles: {20:34, 50:85, 100:160}, categoria: 'Para Empezar', minUnits: 20 },
+            { id: 4, nombre: 'Mini Causitas de Atún', imagen: 'imagenes/bocaditos/mini-causa-atun.png', bundles: {20:30, 50:75, 100:145}, categoria: 'Para Empezar', minUnits: 20 },
 
             // Calentitos y Crujientes
-            { id: 5, nombre: 'Tequeños', imagen: 'imagenes/bocaditos/tequeños.jpg', bundles: {20:70, 50:130, 100:260}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
-            { id: 6, nombre: 'Wantán Frito', imagen: 'imagenes/bocaditos/wantanes.jpeg', bundles: {20:75, 50:145, 100:300}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
-            { id: 7, nombre: 'Brochetas de Pollo', imagen: 'imagenes/bocaditos/brochetas.jpg', bundles: {20:100, 50:190, 100:370}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
-            { id: 8, nombre: 'Muslitos de Pollo', imagen: 'imagenes/bocaditos/muslitos-pollo.jpg', bundles: {20:90, 50:175, 100:340}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 5, nombre: 'Tequeños', imagen: 'imagenes/bocaditos/tequeños.jpg', bundles: {20:28, 50:70, 100:130}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 6, nombre: 'Wantán Frito', imagen: 'imagenes/bocaditos/wantanes.jpeg', bundles: {20:30, 50:75, 100:145}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 7, nombre: 'Brochetas de Pollo', imagen: 'imagenes/bocaditos/brochetas.jpg', bundles: {20:40, 50:100, 100:190}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 8, nombre: 'Muslitos de Pollo', imagen: 'imagenes/bocaditos/muslitos-pollo.jpg', bundles: {20:36, 50:90, 100:175}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
             { id: 9, nombre: 'Canastitas de Pollo', imagen: 'imagenes/bocaditos/canastitas-polllo.avif', bundles: null, comingSoon: true, categoria: 'Calentitos y Crujientes', minUnits: 20 },
-            { id: 10, nombre: 'Mini Tamalitos', imagen: 'imagenes/bocaditos/minitamalitos.jpeg', bundles: {20:100, 50:190, 100:370}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
+            { id: 10, nombre: 'Mini Tamalitos', imagen: 'imagenes/bocaditos/minitamalitos.jpeg', bundles: {20:40, 50:100, 100:190}, categoria: 'Calentitos y Crujientes', minUnits: 20 },
 
             // Los Sanguchitos
             { id: 11, nombre: 'Petipanes con Pollo Deshilachado', imagen: 'imagenes/bocaditos/petipan.jpg', bundles: {50:90}, categoria: 'Los Sanguchitos', minUnits: 50 },
-            { id: 12, nombre: 'Hamburguesitas Caseras', imagen: 'imagenes/bocaditos/hamburguesitas.jpg', bundles: {20:80, 50:150, 100:300}, categoria: 'Los Sanguchitos', minUnits: 20 },
+            { id: 12, nombre: 'Hamburguesitas Caseras', imagen: 'imagenes/bocaditos/hamburguesitas.jpg', bundles: {20:30, 50:80, 100:150}, categoria: 'Los Sanguchitos', minUnits: 20 },
             { id: 13, nombre: 'Mini Triples Clásicos', imagen: 'imagenes/bocaditos/minitriples.jpg', bundles: null, comingSoon: true, categoria: 'Los Sanguchitos', minUnits: 20 },
             { id: 14, nombre: 'Mini Triples Especial', imagen: 'imagenes/bocaditos/mini-triples.jpg', bundles: null, comingSoon: true, categoria: 'Los Sanguchitos', minUnits: 20 },
 
@@ -565,11 +565,28 @@
                     }
                     // Si el producto tiene minUnits >= 20 lo tratamos como bocadito (select con paquetes)
                     if ((producto.minUnits || 20) >= 20) {
-                        const bundleSizes = Object.keys(producto.bundles).map(n => parseInt(n)).sort((a,b)=>a-b);
+                        // mostrar opciones desde 20 hasta 100 (step 10) para bocaditos
+                        const sizes = [20,30,40,50,60,70,80,90,100];
                         let optionsHtml = '<option value="">Seleccionar paquete</option>';
-                        bundleSizes.forEach(size => {
-                            const price = producto.bundles[size];
-                            optionsHtml += `<option value="${size}">${size} unidades — S/ ${Number(price).toFixed(2)}</option>`;
+                        // regla: precio20 está en producto.bundles[20]; cada +10 añade la mitad de precio20
+                        const price20 = producto.bundles && producto.bundles[20] !== undefined ? Number(producto.bundles[20]) : null;
+
+                        sizes.forEach(size => {
+                            let displayPrice;
+                            if (producto.bundles && producto.bundles[size] !== undefined) {
+                                displayPrice = Number(producto.bundles[size]);
+                            } else if (price20 !== null) {
+                                const increments = (size - 20) / 10; // 0 for 20, 1 for 30, ...
+                                const half = price20 / 2;
+                                displayPrice = price20 + increments * half;
+                            } else {
+                                // fallback: proporcional por unidad (si no hay price20)
+                                const perUnit = producto.bundles && producto.bundles[50] !== undefined ? Number(producto.bundles[50]) / 50 : (producto.bundles && producto.bundles[100] !== undefined ? Number(producto.bundles[100]) / 100 : 0);
+                                displayPrice = perUnit * size;
+                            }
+                            // descuento fijo S/10 para 100 unidades SOLO si no existe un precio explícito para 100
+                            if (size === 100 && !(producto.bundles && producto.bundles[size] !== undefined)) displayPrice = Math.max(0, displayPrice - 10);
+                            optionsHtml += `<option value="${size}">${size} unidades — S/ ${displayPrice.toFixed(2)}</option>`;
                         });
 
                         card.innerHTML = `
@@ -823,10 +840,31 @@
                 return;
             }
 
-            // Valores numéricos (10/20/30/40/50)
+            // Valores numéricos (paquetes para bocaditos o cantidades para platos)
             const bundleSize = parseInt(val, 10);
-            let priceForSize = producto.bundles[bundleSize] !== undefined ? Number(producto.bundles[bundleSize]) : Number(producto.bundles[10]) * (bundleSize/10);
-            if (bundleSize === 50 && producto.bundles[50] === undefined) priceForSize = priceForSize * (1 - DISCOUNT_PERCENT);
+            // Calcular precio usando bundle si existe;
+            // Para bocaditos (minUnits >= 20) aplicar regla: precio20 + (n * (precio20/2)) por cada +10
+            let priceForSize;
+            if (producto.bundles && producto.bundles[bundleSize] !== undefined) {
+                priceForSize = Number(producto.bundles[bundleSize]);
+            } else if ((producto.minUnits || 20) >= 20 && producto.bundles && producto.bundles[20] !== undefined) {
+                // bocaditos: usar precio base en 20 y sumar la mitad de ese precio por cada paso de 10
+                const price20 = Number(producto.bundles[20]);
+                const increments = (bundleSize - 20) / 10; // 0 para 20, 1 para 30, ...
+                const half = price20 / 2;
+                priceForSize = price20 + increments * half;
+            } else {
+                // fallback: proporcional por unidad tomando referencias en orden
+                let pricePerUnit = 0;
+                if (producto.bundles && producto.bundles[20] !== undefined) pricePerUnit = Number(producto.bundles[20]) / 20;
+                else if (producto.bundles && producto.bundles[50] !== undefined) pricePerUnit = Number(producto.bundles[50]) / 50;
+                else if (producto.bundles && producto.bundles[100] !== undefined) pricePerUnit = Number(producto.bundles[100]) / 100;
+                else if (producto.bundles && producto.bundles[10] !== undefined) pricePerUnit = Number(producto.bundles[10]) / 10;
+                priceForSize = pricePerUnit * bundleSize;
+            }
+            // descuento fijo para 100 unidades (solo bocaditos según requerimiento)
+            // Aplicar descuento sólo si no hay un precio explícito definido en producto.bundles[100]
+            if (bundleSize === 100 && !(producto.bundles && producto.bundles[bundleSize] !== undefined)) priceForSize = Math.max(0, priceForSize - 10);
 
             const packages = 1;
             const totalUnits = bundleSize * packages;
