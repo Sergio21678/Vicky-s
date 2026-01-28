@@ -463,8 +463,9 @@
 
         // Estado del pedido
         const pedido = {};
+        const DISCOUNT_PERCENT = 0.05; // 5% descuento al seleccionar 50 unidades (Platos / Kids)
 
-        // Renderizar productos (ahora con selección de paquetes)
+        // Renderizar productos (ahora con selección de paquetes o elección por unidades)
         function renderizarProductos() {
             const container = document.getElementById('productos-container');
             container.innerHTML = '';
@@ -500,29 +501,55 @@
                         grid.appendChild(card);
                         return;
                     }
+                    // Si el producto tiene minUnits >= 20 lo tratamos como bocadito (select con paquetes)
+                    if ((producto.minUnits || 20) >= 20) {
+                        const bundleSizes = Object.keys(producto.bundles).map(n => parseInt(n)).sort((a,b)=>a-b);
+                        let optionsHtml = '<option value="">Seleccionar paquete</option>';
+                        bundleSizes.forEach(size => {
+                            const price = producto.bundles[size];
+                            optionsHtml += `<option value="${size}">${size} unidades — S/ ${Number(price).toFixed(2)}</option>`;
+                        });
 
-                    // Construir opciones del select con precios por paquete (sin cantidad de paquetes)
-                    const bundleSizes = Object.keys(producto.bundles).map(n => parseInt(n)).sort((a,b)=>a-b);
-                    let optionsHtml = '<option value="">Seleccionar paquete</option>';
-                    bundleSizes.forEach(size => {
-                        const price = producto.bundles[size];
-                        optionsHtml += `<option value="${size}">${size} unidades — S/ ${Number(price).toFixed(2)}</option>`;
-                    });
-
-                    card.innerHTML = `
-                        <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
-                        <div class="producto-info">
-                            <h4>${producto.nombre}</h4>
-                            <div class="bundle-controls">
-                                <label>Paquete:</label>
-                                <select class="bundle-select" data-producto-id="${producto.id}">${optionsHtml}</select>
-                                <div class="small-note">Mínimo ${minUnits} unidades por producto</div>
-                                <div class="error-mensaje">Cantidad mínima no alcanzada</div>
+                        card.innerHTML = `
+                            <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
+                            <div class="producto-info">
+                                <h4>${producto.nombre}</h4>
+                                <div class="bundle-controls">
+                                    <label>Paquete:</label>
+                                    <select class="bundle-select" data-producto-id="${producto.id}">${optionsHtml}</select>
+                                    <div class="small-note">Mínimo ${minUnits} unidades por producto</div>
+                                    <div class="error-mensaje">Cantidad mínima no alcanzada</div>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
 
-                    grid.appendChild(card);
+                        grid.appendChild(card);
+                    } else {
+                        // Platos de Fondo / Zona Kids: permitir elegir 10/20/30/40/50 y "sugerir otra cantidad" (>=10)
+                        const pricePer10 = Number(producto.bundles[10]);
+                        card.innerHTML = `
+                            <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
+                            <div class="producto-info">
+                                <h4>${producto.nombre}</h4>
+                                <div class="bundle-controls">
+                                    <label>Elige cantidad:</label>
+                                    <div class="qty-options" data-producto-id="${producto.id}" style="margin-top:6px;">
+                                        <label><input type="radio" name="qty-${producto.id}" value="10"> 10</label>
+                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="20"> 20</label>
+                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="30"> 30</label>
+                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="40"> 40</label>
+                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="50"> 50</label>
+                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="other"> Sugerir otra cantidad</label>
+                                    </div>
+                                    <input type="number" min="10" class="custom-qty" placeholder="Indica cantidad (>=10)" style="width:140px; margin-top:6px; display:none;">
+                                    <div class="small-note" style="margin-top:6px;">Precio base por 10 unidades: S/ ${pricePer10.toFixed(2)}</div>
+                                    <div class="error-mensaje">Cantidad mínima no alcanzada</div>
+                                </div>
+                            </div>
+                        `;
+
+                        grid.appendChild(card);
+                    }
                 });
 
                 container.appendChild(categoriaDiv);
@@ -530,6 +557,81 @@
 
             // Listener para selects (selección de paquete implica 1 paquete)
             document.querySelectorAll('.bundle-select').forEach(sel => sel.addEventListener('change', manejarCambioPaquete));
+
+            // Listeners para selecciones por unidades (Platos / Zona Kids)
+            document.querySelectorAll('.qty-options').forEach(div => {
+                const pid = parseInt(div.dataset.productoId);
+                const radios = div.querySelectorAll(`input[name="qty-${pid}"]`);
+                radios.forEach(r => r.addEventListener('change', () => manejarCambioCantidad(pid)));
+                // custom input
+                const card = document.querySelector(`.producto-card[data-producto-id="${pid}"]`);
+                if (card) {
+                    const custom = card.querySelector('.custom-qty');
+                    if (custom) custom.addEventListener('input', () => manejarCambioCantidad(pid));
+                }
+            });
+        }
+
+        // Manejar cambios en cantidad para Platos / Zona Kids
+        function manejarCambioCantidad(productoId) {
+            const producto = productos.find(p => p.id === productoId);
+            const card = document.querySelector(`.producto-card[data-producto-id="${productoId}"]`);
+            if (!card) return;
+
+            const radios = card.querySelectorAll(`input[name="qty-${productoId}"]`);
+            const customInput = card.querySelector('.custom-qty');
+            const errorMensaje = card.querySelector('.error-mensaje');
+
+            let selected = Array.from(radios).find(r => r.checked);
+            // si el usuario escribió en el input personalizado sin marcar 'other', lo activamos
+            if (!selected && customInput && customInput.value) {
+                const otherRadio = Array.from(radios).find(r => r.value === 'other');
+                if (otherRadio) {
+                    otherRadio.checked = true;
+                    selected = otherRadio;
+                }
+            }
+            if (!selected) {
+                // nothing selected -> remove
+                delete pedido[productoId];
+                card.classList.remove('selected');
+                errorMensaje.classList.remove('show');
+                if (customInput) customInput.style.display = 'none';
+                actualizarRecibo();
+                return;
+            }
+
+            // mostrar/ocultar campo personalizado
+            if (customInput) customInput.style.display = (selected.value === 'other') ? 'inline-block' : 'none';
+
+            let qty;
+            if (selected.value === 'other') {
+                qty = parseInt(customInput ? customInput.value : NaN, 10);
+            } else {
+                qty = parseInt(selected.value, 10);
+            }
+
+            if (isNaN(qty) || qty < (producto.minUnits || 10)) {
+                errorMensaje.classList.add('show');
+                delete pedido[productoId];
+                card.classList.remove('selected');
+                actualizarRecibo();
+                return;
+            }
+
+            errorMensaje.classList.remove('show');
+
+            // Price logic: base price is bundles[10]
+            const pricePer10 = Number(producto.bundles[10]);
+            const multiplier = qty / 10;
+            let subtotal = pricePer10 * multiplier;
+
+            // Aplicar descuento pequeño si qty == 50
+            if (qty === 50) subtotal = subtotal * (1 - DISCOUNT_PERCENT);
+
+            pedido[productoId] = { type: 'units', qty, pricePer10, subtotal, totalUnits: qty };
+            card.classList.add('selected');
+            actualizarRecibo();
         }
 
         // Manejar cambios en paquetes (select o número de paquetes)
@@ -610,20 +712,40 @@
             items.forEach(productoId => {
                 const producto = productos.find(p => p.id === parseInt(productoId));
                 const entry = pedido[productoId];
-                const subtotal = entry.bundlePrice * entry.packages;
-                total += subtotal;
+                let subtotal = 0;
 
-                html += `
-                    <div class="recibo-item">
-                        <div class="recibo-item-nombre">
-                            ${producto.nombre}<br>
-                            <small style="color: var(--texto-claro); font-size: 0.85rem;">${entry.packages} x ${entry.bundleSize} unidades — S/ ${entry.bundlePrice.toFixed(2)} por paquete</small>
+                if (entry.type === 'units') {
+                    subtotal = Number(entry.subtotal || entry.pricePer10 * (entry.qty / 10));
+                    total += subtotal;
+
+                    html += `
+                        <div class="recibo-item">
+                            <div class="recibo-item-nombre">
+                                ${producto.nombre}<br>
+                                <small style="color: var(--texto-claro); font-size: 0.85rem;">${entry.qty} unidades — S/ ${entry.pricePer10.toFixed(2)} por 10 u. ${entry.qty===50? '(incluye descuento)':''}</small>
+                            </div>
+                            <div class="recibo-item-cantidad">${entry.qty} u.</div>
+                            <div class="recibo-item-precio">S/ ${subtotal.toFixed(2)}</div>
+                            <div style="margin-left:12px;"><button class="remove-item" data-producto-id="${producto.id}" style="background:transparent;border:1px solid var(--borde);padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--graphite);">Quitar</button></div>
                         </div>
-                        <div class="recibo-item-cantidad">${entry.totalUnits} u.</div>
-                        <div class="recibo-item-precio">S/ ${subtotal.toFixed(2)}</div>
-                        <div style="margin-left:12px;"><button class="remove-item" data-producto-id="${producto.id}" style="background:transparent;border:1px solid var(--borde);padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--graphite);">Quitar</button></div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    // paquete (bocaditos u otros)
+                    subtotal = entry.bundlePrice * entry.packages;
+                    total += subtotal;
+
+                    html += `
+                        <div class="recibo-item">
+                            <div class="recibo-item-nombre">
+                                ${producto.nombre}<br>
+                                <small style="color: var(--texto-claro); font-size: 0.85rem;">${entry.packages} x ${entry.bundleSize} unidades — S/ ${entry.bundlePrice.toFixed(2)} por paquete</small>
+                            </div>
+                            <div class="recibo-item-cantidad">${entry.totalUnits} u.</div>
+                            <div class="recibo-item-precio">S/ ${subtotal.toFixed(2)}</div>
+                            <div style="margin-left:12px;"><button class="remove-item" data-producto-id="${producto.id}" style="background:transparent;border:1px solid var(--borde);padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--graphite);">Quitar</button></div>
+                        </div>
+                    `;
+                }
             });
 
             html += `
@@ -639,12 +761,16 @@
                 document.querySelectorAll('.remove-item').forEach(btn => {
                     btn.addEventListener('click', (ev) => {
                         const id = parseInt(ev.currentTarget.dataset.productoId);
-                        // remover del pedido y resetear select
+                        // remover del pedido y resetear controles
                         delete pedido[id];
                         const card = document.querySelector(`.producto-card[data-producto-id="${id}"]`);
                         if (card) {
                             const sel = card.querySelector('.bundle-select');
                             if (sel) sel.value = '';
+                            const radios = card.querySelectorAll(`input[name="qty-${id}"]`);
+                            radios.forEach(r => r.checked = false);
+                            const custom = card.querySelector('.custom-qty');
+                            if (custom) custom.value = '';
                             card.classList.remove('selected');
                         }
                         actualizarRecibo();
@@ -697,22 +823,26 @@
                     // Crear URL temporal para la imagen
                     const imageUrl = URL.createObjectURL(blob);
                     
-                    // Crear mensaje para WhatsApp con datos de paquetes
+                    // Crear mensaje para WhatsApp con datos de productos (soportando packages y unidades)
                     const items = Object.keys(pedido);
                     let mensaje = '¡Hola! 👋\n\n';
                     mensaje += 'Quiero realizar el siguiente pedido:\n\n';
-                    
+
+                    let total = 0;
                     items.forEach(productoId => {
                         const producto = productos.find(p => p.id === parseInt(productoId));
                         const entry = pedido[productoId];
-                        mensaje += `• ${producto.nombre}: ${entry.totalUnits} unidades (${entry.packages} x ${entry.bundleSize}) — S/ ${(entry.bundlePrice * entry.packages).toFixed(2)}\n`;
+                        if (entry.type === 'units') {
+                            const sub = Number(entry.subtotal || entry.pricePer10 * (entry.qty / 10));
+                            total += sub;
+                            mensaje += `• ${producto.nombre}: ${entry.qty} unidades — S/ ${sub.toFixed(2)}\n`;
+                        } else {
+                            const sub = entry.bundlePrice * entry.packages;
+                            total += sub;
+                            mensaje += `• ${producto.nombre}: ${entry.totalUnits} unidades (${entry.packages} x ${entry.bundleSize}) — S/ ${sub.toFixed(2)}\n`;
+                        }
                     });
-                    
-                    const total = items.reduce((sum, productoId) => {
-                        const entry = pedido[productoId];
-                        return sum + (entry.bundlePrice * entry.packages);
-                    }, 0);
-                    
+
                     mensaje += `\n💰 Total: S/ ${total.toFixed(2)}\n\n`;
                     mensaje += '📎 Adjunto el recibo del pedido en la siguiente imagen.';
                     
