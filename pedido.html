@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realizar Pedido | Los Gustitos de Vicky's</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         .pedido-container {
@@ -117,6 +118,58 @@
         .small-note { font-size: 0.85rem; color: var(--texto-claro); }
 
         .bundle-controls .error-mensaje { margin-top: 6px; }
+
+        /* Animated select display (marquee-like) */
+        .select-wrapper { position: relative; display: block; }
+        .select-wrapper .bundle-select { position: relative; z-index: 1; }
+        .select-display {
+            position: absolute;
+            left: 12px;
+            right: 36px; /* dejar espacio para la flecha nativa */
+            top: 50%;
+            transform: translateY(-50%);
+            overflow: hidden;
+            pointer-events: none;
+            white-space: nowrap;
+            display: block;
+            z-index: 3;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            color: var(--graphite);
+            background: transparent;
+        }
+
+        /* Ocultar la capa overlay cuando el select está en foco (dropdown abierto) */
+        .select-wrapper .bundle-select:focus + .select-display,
+        .select-wrapper .bundle-select[aria-expanded="true"] + .select-display {
+            display: none;
+        }
+        .select-display .marquee { display: inline-block; transform: translateX(0); }
+        @keyframes scrollLR {
+            from { transform: translateX(0); }
+            to   { transform: translateX(calc(-1 * var(--shift, 0px))); }
+        }
+        .select-display.scrolling .marquee {
+            animation-name: scrollLR;
+            animation-duration: 6s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+        }
+        /* Hacer el select 'invisible' para que la capa overlay muestre el texto animado
+           pero mantener la flecha y funcionalidad nativa. */
+        /* Cuando el wrapper tiene la clase overlay-active, ocultamos el texto nativo
+           del select y mostramos la capa animada. Al removerla (cuando se abre)
+           el select nativo muestra el texto y el dropdown es visible normalmente. */
+        .select-wrapper.overlay-active .bundle-select {
+            background: transparent;
+            color: transparent;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .select-wrapper.overlay-active .select-display { display: block; }
+        .select-wrapper .select-display { display: none; }
 
         /* Estilo visual para el select de paquetes acorde al theme
            Usamos fondo blanco para asegurar legibilidad del texto y
@@ -337,9 +390,9 @@
             </a>
         </div>
         <nav>
-            <a href="index.html">Inicio</a>
-            <a href="menu.html">Ver Menú</a>
-            <a href="servicios.html">Servicios</a>
+            <a href="index.html"><i class="fas fa-home" style="margin-right:6px;"></i>Inicio</a>
+            <a href="menu.html"><i class="fas fa-book-open" style="margin-right:6px;"></i>Ver Menú</a>
+            <a href="servicios.html"><i class="fas fa-concierge-bell" style="margin-right:6px;"></i>Servicios</a>
             <a href="https://wa.me/51933056666" class="btn-cta" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
         </nav>
     </header>
@@ -471,10 +524,19 @@
             container.innerHTML = '';
             const categorias = [...new Set(productos.map(p => p.categoria))];
 
+            const categoryIcons = {
+                'Para Empezar': 'fa-snowflake',
+                'Calentitos y Crujientes': 'fa-fire',
+                'Los Sanguchitos': 'fa-bread-slice',
+                'Platos de Fondo': 'fa-utensils',
+                'Zona Kids': 'fa-child'
+            };
+
             categorias.forEach(categoria => {
                 const categoriaDiv = document.createElement('div');
                 categoriaDiv.className = 'categoria-pedido';
-                categoriaDiv.innerHTML = `<h3>${categoria}</h3><div class="productos-grid"></div>`;
+                const iconClass = categoryIcons[categoria] || 'fa-utensils';
+                categoriaDiv.innerHTML = `<h3><i class="fas ${iconClass}" style="margin-right:8px;"></i>${categoria}</h3><div class="productos-grid"></div>`;
 
                 const grid = categoriaDiv.querySelector('.productos-grid');
                 const productosCategoria = productos.filter(p => p.categoria === categoria);
@@ -525,22 +587,29 @@
 
                         grid.appendChild(card);
                     } else {
-                        // Platos de Fondo / Zona Kids: permitir elegir 10/20/30/40/50 y "sugerir otra cantidad" (>=10)
+                        // Platos de Fondo / Zona Kids: usar select como bocaditos (10/20/30/40/50 + 'other')
                         const pricePer10 = Number(producto.bundles[10]);
+                        // construimos opciones para 10,20,30,40,50
+                        const sizes = [10,20,30,40,50];
+                        let optionsHtml = '<option value="">Seleccionar paquete/cantidad</option>';
+                        sizes.forEach(sz => {
+                            // usar precio definido en bundles si existe, si no calcular como pricePer10 * multiplier
+                            let displayPrice = producto.bundles[sz] !== undefined ? Number(producto.bundles[sz]) : pricePer10 * (sz/10);
+                            // si no hay bundle definido para 50 y existe descuento, aplicar descuento
+                            if (sz === 50 && producto.bundles[50] === undefined) {
+                                displayPrice = displayPrice * (1 - DISCOUNT_PERCENT);
+                            }
+                            optionsHtml += `<option value="${sz}">${sz} unidades — S/ ${displayPrice.toFixed(2)}</option>`;
+                        });
+                        optionsHtml += `<option value="other">Sugerir otra cantidad</option>`;
+
                         card.innerHTML = `
                             <div class="producto-img" style="background-image: url('${producto.imagen}')"></div>
                             <div class="producto-info">
                                 <h4>${producto.nombre}</h4>
                                 <div class="bundle-controls">
-                                    <label>Elige cantidad:</label>
-                                    <div class="qty-options" data-producto-id="${producto.id}" style="margin-top:6px;">
-                                        <label><input type="radio" name="qty-${producto.id}" value="10"> 10</label>
-                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="20"> 20</label>
-                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="30"> 30</label>
-                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="40"> 40</label>
-                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="50"> 50</label>
-                                        <label style="margin-left:8px;"><input type="radio" name="qty-${producto.id}" value="other"> Sugerir otra cantidad</label>
-                                    </div>
+                                    <label>Paquete / cantidad:</label>
+                                    <select class="bundle-select" data-producto-id="${producto.id}">${optionsHtml}</select>
                                     <input type="number" min="10" class="custom-qty" placeholder="Indica cantidad (>=10)" style="width:140px; margin-top:6px; display:none;">
                                     <div class="small-note" style="margin-top:6px;">Precio base por 10 unidades: S/ ${pricePer10.toFixed(2)}</div>
                                     <div class="error-mensaje">Cantidad mínima no alcanzada</div>
@@ -558,18 +627,88 @@
             // Listener para selects (selección de paquete implica 1 paquete)
             document.querySelectorAll('.bundle-select').forEach(sel => sel.addEventListener('change', manejarCambioPaquete));
 
-            // Listeners para selecciones por unidades (Platos / Zona Kids)
-            document.querySelectorAll('.qty-options').forEach(div => {
-                const pid = parseInt(div.dataset.productoId);
-                const radios = div.querySelectorAll(`input[name="qty-${pid}"]`);
-                radios.forEach(r => r.addEventListener('change', () => manejarCambioCantidad(pid)));
-                // custom input
-                const card = document.querySelector(`.producto-card[data-producto-id="${pid}"]`);
-                if (card) {
-                    const custom = card.querySelector('.custom-qty');
-                    if (custom) custom.addEventListener('input', () => manejarCambioCantidad(pid));
-                }
-            });
+            // Mejorar selects: envolver con display para animar el texto si es largo
+            function enhanceSelects(){
+                document.querySelectorAll('.bundle-select').forEach(sel => {
+                    // evitar envolver múltiples veces
+                    if (sel.closest('.select-wrapper')) return;
+                    const wrapper = document.createElement('div'); wrapper.className = 'select-wrapper';
+                    const display = document.createElement('span'); display.className = 'select-display';
+                    const marquee = document.createElement('span'); marquee.className = 'marquee';
+                    marquee.textContent = (sel.options[sel.selectedIndex] || sel.options[0]).text;
+                    display.appendChild(marquee);
+                    // insertar wrapper
+                    sel.parentNode.insertBefore(wrapper, sel);
+                    wrapper.appendChild(sel);
+                    wrapper.appendChild(display);
+                    // permitir que el dropdown sobresalga
+                    wrapper.style.overflow = 'visible';
+                    // iniciar con overlay activo (controla visibilidad con clase)
+                    wrapper.classList.add('overlay-active');
+                    // permitir clics en el select (display no captura eventos)
+                    display.style.pointerEvents = 'none';
+
+                    function updateMarquee(){
+                        const text = (sel.options[sel.selectedIndex] || sel.options[0]).text;
+                        marquee.textContent = text;
+                        // pequeña espera para que el DOM calcule tamaños
+                        requestAnimationFrame(() => {
+                            const cw = display.clientWidth;
+                            const sw = marquee.scrollWidth;
+                            if (sw > cw) {
+                                const shift = sw - cw;
+                                marquee.style.setProperty('--shift', `${shift}px`);
+                                display.classList.add('scrolling');
+                            } else {
+                                display.classList.remove('scrolling');
+                                marquee.style.removeProperty('--shift');
+                                marquee.style.transform = 'translateX(0)';
+                            }
+                        });
+                    }
+
+                    sel.addEventListener('change', () => {
+                        updateMarquee();
+                        // si seleccionó 'other' mostramos el input si existe
+                        const card = sel.closest('.producto-card');
+                        if (!card) return;
+                        const custom = card.querySelector('.custom-qty');
+                        if (sel.value === 'other') {
+                            if (custom) {
+                                custom.style.display = 'inline-block';
+                                // attach marquee-only handler without replacing existing handlers
+                                if (custom._marqueeHandler) custom.removeEventListener('input', custom._marqueeHandler);
+                                custom._marqueeHandler = function(){
+                                    marquee.textContent = `${custom.value || ''} unidades`;
+                                    updateMarquee();
+                                };
+                                custom.addEventListener('input', custom._marqueeHandler);
+                                if (custom.value) custom._marqueeHandler();
+                            }
+                        } else {
+                            if (custom) {
+                                custom.style.display = 'none';
+                                // remove only marquee handler, keep other handlers (e.g., pedido logic)
+                                if (custom._marqueeHandler) { custom.removeEventListener('input', custom._marqueeHandler); delete custom._marqueeHandler; }
+                                custom.value = '';
+                            }
+                        }
+                    });
+
+                    // controlar overlay mediante la clase en el wrapper para mayor compatibilidad
+                    const wrapperNode = wrapper;
+                    sel.addEventListener('focus', () => { if (wrapperNode) wrapperNode.classList.remove('overlay-active'); updateMarquee(); });
+                    sel.addEventListener('blur', () => { if (wrapperNode) wrapperNode.classList.add('overlay-active'); updateMarquee(); });
+                    sel.addEventListener('pointerdown', () => { if (wrapperNode) wrapperNode.classList.remove('overlay-active'); });
+                    sel.addEventListener('mousedown', () => { if (wrapperNode) wrapperNode.classList.remove('overlay-active'); });
+                    sel.addEventListener('keydown', (ev) => { if (ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'Enter') { if (wrapperNode) wrapperNode.classList.remove('overlay-active'); } });
+
+                    // init
+                    updateMarquee();
+                });
+            }
+
+            enhanceSelects();
         }
 
         // Manejar cambios en cantidad para Platos / Zona Kids
@@ -634,31 +773,63 @@
             actualizarRecibo();
         }
 
-        // Manejar cambios en paquetes (select o número de paquetes)
+        // Manejar cambios en paquetes (select o número de paquetes / cantidades)
         function manejarCambioPaquete(e) {
             const productoId = parseInt(e.target.dataset.productoId);
             const card = document.querySelector(`.producto-card[data-producto-id="${productoId}"]`);
-
             const select = card.querySelector('.bundle-select');
             const errorMensaje = card.querySelector('.error-mensaje');
-            const bundleSize = parseInt(select.value);
-
             const producto = productos.find(p => p.id === productoId);
-            // cuando no hay selección (value === "") eliminar del pedido
-            if (!bundleSize) {
+            const minUnits = producto.minUnits || 10;
+
+            const val = select.value;
+
+            // Sin selección
+            if (!val) {
                 delete pedido[productoId];
                 card.classList.remove('selected');
                 errorMensaje.classList.remove('show');
+                const custom = card.querySelector('.custom-qty'); if (custom) { custom.style.display = 'none'; custom.value = ''; custom.oninput = null; }
                 actualizarRecibo();
                 return;
             }
 
-            const bundlePrice = Number(producto.bundles[bundleSize]);
-            // ahora cada selección corresponde a un paquete (cantidad = 1)
+            // Opción 'other' -> mostrar input custom y calcular proporcional
+            if (val === 'other') {
+                const custom = card.querySelector('.custom-qty');
+                if (!custom) return;
+                custom.style.display = 'inline-block';
+                // reemplazar handler para evitar acumulación
+                custom.oninput = function () {
+                    const qty = parseInt(custom.value, 10);
+                    if (isNaN(qty) || qty < minUnits) {
+                        errorMensaje.classList.add('show');
+                        delete pedido[productoId];
+                        card.classList.remove('selected');
+                        actualizarRecibo();
+                        return;
+                    }
+                    errorMensaje.classList.remove('show');
+                    const pricePer10 = Number(producto.bundles[10]);
+                    let subtotal = pricePer10 * (qty / 10);
+                    if (qty === 50) subtotal = subtotal * (1 - DISCOUNT_PERCENT);
+                    pedido[productoId] = { type: 'units', qty, pricePer10, subtotal, totalUnits: qty };
+                    card.classList.add('selected');
+                    actualizarRecibo();
+                };
+
+                // si ya tiene valor previo, disparar cálculo
+                if (custom.value) custom.oninput();
+                return;
+            }
+
+            // Valores numéricos (10/20/30/40/50)
+            const bundleSize = parseInt(val, 10);
+            let priceForSize = producto.bundles[bundleSize] !== undefined ? Number(producto.bundles[bundleSize]) : Number(producto.bundles[10]) * (bundleSize/10);
+            if (bundleSize === 50 && producto.bundles[50] === undefined) priceForSize = priceForSize * (1 - DISCOUNT_PERCENT);
+
             const packages = 1;
             const totalUnits = bundleSize * packages;
-
-            const minUnits = producto.minUnits || 20;
 
             if (totalUnits < minUnits) {
                 errorMensaje.classList.add('show');
@@ -666,8 +837,10 @@
                 card.classList.remove('selected');
             } else {
                 errorMensaje.classList.remove('show');
-                pedido[productoId] = { bundleSize, packages, bundlePrice, totalUnits };
+                pedido[productoId] = { type: 'bundle', bundleSize, packages, bundlePrice: priceForSize, totalUnits };
                 card.classList.add('selected');
+                // ocultar custom si estaba visible
+                const custom = card.querySelector('.custom-qty'); if (custom) { custom.style.display = 'none'; custom.value = ''; custom.oninput = null; }
             }
 
             actualizarRecibo();
@@ -770,7 +943,7 @@
                             const radios = card.querySelectorAll(`input[name="qty-${id}"]`);
                             radios.forEach(r => r.checked = false);
                             const custom = card.querySelector('.custom-qty');
-                            if (custom) custom.value = '';
+                            if (custom) { custom.value = ''; custom.style.display = 'none'; custom.oninput = null; }
                             card.classList.remove('selected');
                         }
                         actualizarRecibo();
