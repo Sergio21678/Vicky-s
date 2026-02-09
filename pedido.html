@@ -209,18 +209,20 @@
             position: sticky;
             top: 120px;
             /* Limitar la altura de la sección de recibo para que su contenido pueda hacer scroll
-               sin empujar la columna de productos. */
+               sin empujar la columna de productos. Usamos flex para mantener el botón siempre visible. */
             max-height: calc(100vh - 140px);
-            overflow: hidden;
             background: white;
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(49, 47, 47, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .recibo-section h2 {
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 0;
             font-size: 1.8rem;
             color: var(--graphite);
         }
@@ -230,10 +232,14 @@
             border-radius: 15px;
             padding: 20px;
             background: var(--parchment);
-            /* Hacer que el contenido del recibo pueda hacer scroll interno si es muy largo */
-            max-height: calc(100vh - 240px);
+            /* Hacer que el contenido del recibo haga scroll interno y el contenedor mantenga el botón visible */
             overflow-y: auto;
+            flex: 1 1 auto;
         }
+
+        .recibo-actions { display: block; }
+
+        .recibo-section .btn-finalizar { margin-top: 6px; align-self: stretch; }
 
         .recibo-header {
             text-align: center;
@@ -369,12 +375,21 @@
         @media (max-width: 480px) {
             .productos-grid { grid-template-columns: 1fr; gap: 12px; }
             .producto-card { display: flex; gap: 12px; align-items: stretch; }
-            .producto-img { width: 40%; min-height: 110px; height: auto; background-size: cover; }
+            .producto-img { width: 40%; min-height: 90px; height: auto; background-size: cover; }
             .producto-info { padding: 10px; width: 60%; }
             .producto-info h4 { font-size: 0.95rem; }
             .bundle-controls { gap: 6px; }
             .bundle-select, .packages-input { font-size: 0.95rem; }
             .packages-input { width: 60%; margin: 0 auto; }
+            /* Ajustes para que el recibo muestre correctamente y el botón no quede sobrepuesto */
+            .recibo-section { max-height: calc(100vh - 120px); padding: 18px; }
+            .recibo-content { max-height: calc(100vh - 220px); }
+            /* Hacer que el botón sea sticky dentro de la sección en móviles */
+            .recibo-section .btn-finalizar { position: sticky; bottom: 12px; z-index: 30; margin-top: 8px; }
+            /* Añadir espacio inferior al contenido para evitar solapamiento con el botón */
+            .recibo-content { padding-bottom: 80px; }
+            /* Mejorar visibilidad del select overlay en pantallas pequeñas */
+            .select-wrapper .select-display { right: 46px; left: 12px; }
         }
 
         #recibo-imagen {

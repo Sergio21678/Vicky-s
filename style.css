@@ -116,6 +116,23 @@ header {
     box-shadow: 0 2px 10px rgba(49, 47, 47, 0.1);
 }
 
+/* Reducir header y logo en pantallas pequeñas para minimizar el espacio entre navbar y hero */
+@media (max-width: 768px) {
+    header {
+        padding: 0.6rem 3%;
+        min-height: 68px;
+    }
+    .logo img { height: 76px; }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 0.5rem 3%;
+        min-height: 58px;
+    }
+    .logo img { height: 64px; }
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -185,7 +202,8 @@ nav a:hover {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 80px 20px;
+    /* reducir padding superior para acercar la imagen al navbar en móvil */
+    padding: 40px 20px 60px;
     background: linear-gradient(135deg, rgba(201, 177, 180, 0.9), rgba(235, 148, 134, 0.8)), 
                 url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1350');
     background-size: cover;
@@ -225,14 +243,15 @@ nav a:hover {
 }
 
 .hero-home .foto-principal {
-    width: 520px !important;
-    height: 520px !important;
-    max-width: 84vw;
+    /* Mantener siempre proporción 1:1 y forma circular; reducir según ancho de pantalla */
+    width: min(520px, 84vw);
+    height: auto; /* permitir que el alto se ajuste y mantener aspect-ratio */
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     display: block;
     overflow: hidden;
-    background-size: 100% !important;
+    /* usar cover para recortar y mantener el encuadre cuando el contenedor cambia de tamaño */
+    background-size: cover !important;
     background-position: 40% 10% !important;
     background-repeat: no-repeat;
     background-color: var(--parchment);
@@ -241,6 +260,29 @@ nav a:hover {
     margin-bottom: 2rem;
     animation: fadeInUp 1s ease-out, float 3s ease-in-out infinite;
     animation-delay: 0.2s;
+}
+
+/* Ajustes específicos por breakpoint para mantener el círculo grande y proporcional en móviles */
+@media (max-width: 768px) {
+    .hero-home .foto-principal {
+        /* Mantener el círculo bien visible en tablets */
+        width: min(620px, 92vw);
+        border-width: 10px;
+        box-shadow: 0 12px 34px rgba(49, 47, 47, 0.34);
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-home .foto-principal {
+        /* En móviles mantener el círculo grande y responsivo */
+        width: min(560px, 96vw);
+        border-width: 10px;
+        box-shadow: 0 10px 28px rgba(49, 47, 47, 0.32);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Reducir espacio superior del hero para que la imagen quede pegada al navbar */
+    .hero-home { padding-top: 8px; padding-bottom: 28px; }
 }
 
 .hero {
@@ -831,36 +873,44 @@ footer {
         height: 70px;
     }
     
-    header { 
-        flex-direction: column; 
-        padding: 1rem;
+    header {
+        flex-direction: column;
+        padding: 0.7rem 3% 0.5rem;
         min-height: auto;
     }
     
-    nav { 
-        margin-top: 15px; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 10px;
+    nav {
+        margin-top: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
     }
     
-    nav a { 
+    nav a {
         margin: 0;
         font-size: 0.85rem;
         padding: 8px 12px;
     }
+
+    .hero-home {
+        justify-content: flex-start;
+        min-height: auto;
+        padding: 16px 16px 40px;
+    }
     
     .hero-home h1 {
-        font-size: 2.5rem;
+        font-size: 2.3rem;
     }
     
     .hero-home .slogan {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     
     .hero-home .foto-principal {
-        width: 200px;
-        height: 200px;
+        width: min(420px, 82vw);
+        height: auto;
+        aspect-ratio: 1 / 1;
+        margin-bottom: 1.5rem;
     }
     
     h1 {
@@ -1090,6 +1140,14 @@ footer {
 }
 
 @media (max-width: 480px) {
+    .hero-home {
+        padding: 12px 14px 32px;
+    }
+
+    .hero-home .foto-principal {
+        width: min(360px, 88vw);
+    }
+
     .hero-home h1 {
         font-size: 2rem;
     }
