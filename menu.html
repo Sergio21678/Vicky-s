@@ -6,6 +6,13 @@
     <title>Menú Completo | Los Gustitos de Vicky's</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media (max-width: 600px) {
+            nav { flex-wrap: nowrap; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            nav a { padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; white-space: nowrap; display: inline-block; }
+            nav a + a::before { content: " | "; color: var(--texto-claro); margin: 0 6px; font-weight: 600; }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -18,8 +25,7 @@
             <a href="index.html"><i class="fas fa-home" style="margin-right:6px;"></i>Inicio</a>
             <a href="menu.html"><i class="fas fa-book-open" style="margin-right:6px;"></i>Ver Menú</a>
             <a href="servicios.html"><i class="fas fa-concierge-bell" style="margin-right:6px;"></i>Servicios</a>
-            <a href="pedido.html" class="btn-cta" style="margin-right:6px;"><i class="fas fa-shopping-cart" style="margin-right:6px;"></i>Pedido</a>
-            <a href="https://wa.me/51933056666" class="btn-cta" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="pedido.html" style="margin-right:6px;"><i class="fas fa-shopping-cart" style="margin-right:6px;"></i>Pedido</a>
         </nav>
     </header>
 
