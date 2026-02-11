@@ -20,6 +20,22 @@
     --borde: rgba(49, 47, 47, 0.1);
 }
 
+/* Small-screen header/nav override: keep header horizontal and nav on one line
+   This fixes devices around 419px where the header was stacking vertically. */
+@media (max-width: 420px) {
+    header { flex-direction: row !important; align-items: center !important; }
+    nav {
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        overflow-x: auto !important;
+        margin-top: 0 !important;
+        justify-content: flex-end !important;
+        gap: 6px !important;
+    }
+    nav a .nav-text { display: inline !important; }
+    nav a + a::before { content: " | " !important; color: var(--texto-claro) !important; margin: 0 6px !important; font-weight: 600 !important; }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -147,8 +163,20 @@ nav {
     nav a { padding: 5px 8px; font-size: 0.82rem; }
 }
 
+/* Ensure header/nav remain horizontal on small devices */
+@media (max-width: 480px) {
+    header { flex-direction: row; align-items: center; padding: 0.6rem 3%; }
+    .logo img { height: 64px; }
+    nav { margin-top: 0; flex-wrap: nowrap; justify-content: flex-end; gap: 8px; overflow-x: auto; white-space: nowrap; }
+    nav a { padding: 6px 8px; font-size: 0.9rem; }
+}
+
 /* Keep the separator visible on small screens as requested */
 nav a + a::before { content: " | "; color: var(--texto-claro); margin: 0 6px; font-weight: 600; }
+
+/* icon spacing and responsive text hiding */
+nav a i { margin-right: 10px; }
+nav a .nav-text { display: inline; }
 
 /* --- About section (integrated layout) --- */
 .about {
@@ -196,41 +224,13 @@ nav a + a::before { content: " | "; color: var(--texto-claro); margin: 0 6px; fo
     font-size: 1.2rem;
     box-shadow: 0 8px 20px rgba(235,148,134,0.12);
 }
+
 .about-deco .accent {
     width: 4px;
     height: 160px;
     background: linear-gradient(180deg, var(--primario), var(--acento));
     margin-top: 12px;
     border-radius: 4px;
-}
-.about-text {
-    flex: 1;
-    color: var(--texto-claro);
-    line-height: 1.7;
-}
-.about-text p { margin: 0; }
-.about-text .lead { display:block; font-weight:700; color:var(--graphite); margin-bottom:8px; }
-
-@media (max-width: 768px) {
-    .about { padding: 36px 4%; }
-    .about h2 { font-size: 1.25rem; }
-    .about-row { flex-direction: column; align-items: center; }
-    .about-deco { flex-direction: row; gap: 12px; align-items: center; }
-    .about-deco .accent { width: 100%; height: 4px; margin-top: 10px; }
-    .about-text { margin-top: 12px; }
-}
-
-@media (max-width: 480px) {
-    header {
-        padding: 0.5rem 3%;
-        min-height: 58px;
-    }
-    .logo img { height: 64px; }
-}
-
-.logo {
-    display: flex;
-    align-items: center;
 }
 
 .logo a {
@@ -992,41 +992,19 @@ footer {
 }
 
 /* --- RESPONSIVE --- */
-@media (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        padding: 0 5%;
-    }
-    
-    .modalidades-grid,
-    .packs-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
+/* Hide labels and separators only on very narrow screens (<=320px) */
+@media (max-width: 360px) {
+    nav a { padding: 6px 8px; font-size: 0.88rem; }
 }
 
-@media (max-width: 768px) {
-    .logo img {
-        height: 70px;
-    }
-    
-    header {
-        flex-direction: column;
-        padding: 0.7rem 3% 0.5rem;
-        min-height: auto;
-    }
-    
-    nav {
-        margin-top: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    nav a {
-        margin: 0;
-        font-size: 0.85rem;
-        padding: 8px 12px;
-    }
+@media (max-width: 320px) {
+    /* hide text labels and separators so icons fit comfortably */
+    nav a .nav-text { display: none; }
+    nav a i { margin-right: 0; font-size: 1.05rem; }
+    nav a { padding: 6px 6px; }
+    nav a + a::before { content: ""; }
+}
+
 
     .hero-home {
         justify-content: flex-start;
@@ -1304,4 +1282,60 @@ footer {
     .card-content {
         padding: 20px;
     }
+}
+
+/* Mobile: place nav below the logo and keep links on one horizontal line */
+@media (max-width: 420px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 0.6rem 3%;
+    }
+    .logo {
+        order: 1;
+    }
+    nav {
+        order: 2;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+    nav a { padding: 4px 6px; font-size: 0.82rem; }
+    nav a .nav-text { display: inline; }
+    nav a + a::before { content: " | "; color: var(--texto-claro); margin: 0 4px; font-weight: 600; }
+    nav a i { margin-right: 4px; font-size: 0.95rem; }
+}
+
+/* Strong override: ensure stacking (logo above) and nav stays one horizontal row up to 480px */
+@media (max-width: 480px) {
+    header {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 0.6rem 3% !important;
+    }
+    .logo { order: 1; }
+    nav {
+        order: 2 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        margin-top: 6px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+    }
+    nav a { padding: 4px 6px !important; font-size: 0.82rem !important; }
+    nav a .nav-text { display: inline !important; }
+    nav a + a::before { content: " | " !important; color: var(--texto-claro) !important; margin: 0 4px !important; font-weight: 600 !important; }
+    nav a i { margin-right: 4px !important; font-size: 0.95rem !important; }
 }
