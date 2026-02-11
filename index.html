@@ -6,13 +6,6 @@
     <title>Los Gustitos de Vicky's | Cocina Arequipeña con Cariño de Hogar</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @media (max-width: 600px) {
-            nav { flex-wrap: nowrap; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            nav a { padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; white-space: nowrap; display: inline-block; }
-            nav a + a::before { content: " | "; color: var(--texto-claro); margin: 0 6px; font-weight: 600; }
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -22,8 +15,8 @@
         <nav>
             <a href="index.html"><i class="fas fa-home" style="margin-right:6px;"></i>Inicio</a>
             <a href="menu.html"><i class="fas fa-book-open" style="margin-right:6px;"></i>Ver Menú</a>
-            <a href="servicios.html"><i class="fas fa-concierge-bell" style="margin-right:6px;"></i>Servicios</a>
             <a href="pedido.html" style="margin-right:6px;"><i class="fas fa-shopping-cart" style="margin-right:6px;"></i>Pedido</a>
+            <a href="servicios.html"><i class="fas fa-concierge-bell" style="margin-right:6px;"></i>Servicios</a>
         </nav>
     </header>
 
@@ -34,8 +27,24 @@
         <a href="https://wa.me/51933056666?text=Hola!%20Quiero%20cotizar%20mi%20evento" class="btn-main" target="_blank">
             <i class="fab fa-whatsapp"></i> ¡Cotiza tu evento por WhatsApp!
         </a>
-        </p>
     </section>
+
+    <main>
+        <section class="about">
+            <div class="about-inner">
+                <h2>SOBRE MÍ</h2>
+                <div class="about-row">
+                    <div class="about-deco">
+                        <div class="icon"><i class="fas fa-utensils"></i></div>
+                        <div class="accent" aria-hidden="true"></div>
+                    </div>
+                    <div class="about-text">
+                        <p><span class="lead">Hola, soy Vicky.</span> Más de 35 años de experiencia profesional respaldan mi cuchara. He pasado por las cocinas más exigentes (criollas, marinas y turísticas) y hoy cocino para ti con la misma excelencia y pasión de siempre. Te ofrezco platos contundentes, técnica experta y ese toque de cariño que hace que todo sepa mejor.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer>
         <div class="footer-content">
