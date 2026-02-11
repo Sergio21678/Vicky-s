@@ -179,6 +179,37 @@ nav a:hover {
     background: rgba(235, 148, 134, 0.1);
 }
 
+/* Botones principales del navbar: Inicio, Ver Menú, Servicios y Pedido */
+nav a[href="index.html"],
+nav a[href="menu.html"],
+nav a[href="servicios.html"],
+nav a[href="pedido.html"] {
+    background: linear-gradient(90deg, var(--primario), var(--dusty-olive));
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(49,47,47,0.12);
+    text-transform: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s;
+}
+
+nav a[href="index.html"] i,
+nav a[href="menu.html"] i,
+nav a[href="servicios.html"] i,
+nav a[href="pedido.html"] i {
+    margin-right: 8px;
+}
+
+nav a[href="index.html"]:hover,
+nav a[href="menu.html"]:hover,
+nav a[href="servicios.html"]:hover,
+nav a[href="pedido.html"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(49,47,47,0.18);
+    opacity: 0.98;
+}
+
 .btn-cta {
     background: var(--primario);
     color: white !important;
